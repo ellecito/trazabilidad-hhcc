@@ -10,7 +10,7 @@
            <option disabled selected>Seleccione</option>
            <?php if($pacientes){ ?>
            <?php foreach($pacientes as $paciente){ ?>
-           <option value="<?php echo $paciente->rut; ?>"><?php echo $paciente->nombres . " " . $paciente->apellidos; ?></option>
+           <option value="<?php echo $paciente->codigo; ?>"><?php echo $paciente->nombres . " " . $paciente->apellidos; ?></option>
            <?php } ?>
            <?php } ?>
            
@@ -19,23 +19,17 @@
     <label for="fecha" class="col-sm-2 control-label">Fecha</label>
     <div class="col-sm-4">
       <div class="input-group date">
-        <input id="datepicker" type="text" class="form-control" name="fecha"/>
+        <input id="fecha" type="text" class="form-control" name="fecha" value="<?php echo date("d/m/Y"); ?>"/>
         <span class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span> </span> </div>
     </div>
   </div>
 
   <div class="form-group">
-    <label for="funcionario" class="col-sm-2 control-label">Funcionario</label>
+    <label for="fecha_retorno" class="col-sm-2 control-label">Fecha Devolución</label>
     <div class="col-sm-4">
-      <select id="funcionario" name="funcionario" class="selectpicker validate[required]">
-           <option disabled selected>Seleccione</option>
-           <?php if($funcionarios){ ?>
-           <?php foreach($funcionarios as $funcionario){ ?>
-           <option value="<?php echo $funcionario->rut; ?>"><?php echo $funcionario->nombres . " " . $funcionario->apellidos; ?></option>
-           <?php } ?>
-           <?php } ?>
-           
-        </select>
+      <div class="input-group date">
+        <input id="fecha_retorno" type="text" class="form-control" name="fecha_retorno" value="<?php echo date("d/m/Y"); ?>"/>
+        <span class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span> </span> </div>
     </div>
     <label for="medico" class="col-sm-2 control-label">Medico</label>
     <div class="col-sm-4">
@@ -43,7 +37,7 @@
            <option disabled selected>Seleccione</option>
            <?php if($medicos){ ?>
            <?php foreach($medicos as $medico){ ?>
-           <option value="<?php echo $medico->rut; ?>"><?php echo $medico->nombres . " " . $medico->apellidos; ?></option>
+           <option value="<?php echo $medico->codigo; ?>"><?php echo $medico->nombres . " " . $medico->apellidos; ?></option>
            <?php } ?>
            <?php } ?>
            
@@ -63,8 +57,9 @@
            
         </select>
     </div>
-    <label for="fecha" class="col-sm-2 control-label"></label>
+    <label for="detalle" class="col-sm-2 control-label">Detalle</label>
     <div class="col-sm-4">
+    <textarea name="detalle" id="detalle" class="form-control"></textarea>
     </div>
     <div class="text-box">
       <button type="submit" class="btn btn-primary btn-lg">Guardar</button>

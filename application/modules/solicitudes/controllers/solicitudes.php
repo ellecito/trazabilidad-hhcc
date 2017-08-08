@@ -68,10 +68,13 @@ class Solicitudes extends CI_Controller {
 		if($this->input->post()){
 
 			#validaciones
+			$this->form_validation->set_rules('fecha', 'Fecha Uso', 'required');
+			$this->form_validation->set_rules('fecha_retorno', 'Fecha Retorno', 'required');
 			$this->form_validation->set_rules('paciente', 'Paciente', 'required');
 			$this->form_validation->set_rules('medico', 'Medico', 'required');
-			$this->form_validation->set_rules('funcionario', 'Funcionario', 'required');
+			$this->form_validation->set_rules('motivo', 'Motivo', 'required');
 			$this->form_validation->set_rules('fecha', 'Fecha', 'required');
+			$this->form_validation->set_rules('detalle', 'Detalle', 'required');
 
 			$this->form_validation->set_message('required', '* %s es obligatorio');
 			$this->form_validation->set_error_delimiters('<div>','</div>');
@@ -84,10 +87,13 @@ class Solicitudes extends CI_Controller {
 			$datos = array(
 				'so_codigo' => $this->objSolicitud->getLastId(),
 				'so_fecha_emision' => date("Y-m-d H:i:s"),
-				'so_fecha_asignada' => $this->input->post('fecha'),
-				'fu_rut' => $this->input->post('funcionario'),
-				'me_rut' => $this->input->post('medico'),
-				'pa_rut' => $this->input->post('paciente'),
+				'so_fecha_asignada' => date("Y-m-d", strtotime($this->input->post('fecha'))),
+				'so_fecha_entrega' => date("Y-m-d", strtotime($this->input->post('fecha_retorno'))),
+				'fu_codigo' => $this->session->userdata("usuario")->codigo,
+				'me_codigo' => $this->input->post('medico'),
+				'pa_codigo' => $this->input->post('paciente'),
+				'mo_codigo' => $this->input->post('motivo'),
+				'so_detalle' => $this->input->post('detalle')
 			);
 			
 			if($this->objSolicitud->insertar($datos)){
@@ -116,7 +122,7 @@ class Solicitudes extends CI_Controller {
 			$this->layout->js('js/jquery/bootstrap-multi-select/js/bootstrap-select.js');
 
 			#js
-			$this->layout->js('js/sistema/solicitud/agregar.js');
+			$this->layout->js('js/sistema/solicitudes/agregar.js');
 
 			#nav
 			$this->layout->nav(array("Solicitud "=> "solicitudes", "Agregar Solicitud" =>"/"));
@@ -133,7 +139,7 @@ class Solicitudes extends CI_Controller {
 		}
 	}
 
-	public function editar($codigo = false){
+	/*public function editar($codigo = false){
 
 		if($this->input->post()){
 
@@ -181,6 +187,6 @@ class Solicitudes extends CI_Controller {
 			$this->layout->view('editar',$contenido);
 
 		}
-	}
+	}*/
 	
 }

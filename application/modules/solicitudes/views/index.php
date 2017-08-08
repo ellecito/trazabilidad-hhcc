@@ -22,7 +22,9 @@
     <thead>
       <tr>
         <th scope="col" style="width:90px;">Código</th>
-        <th scope="col" style="width:400px;">Nombre</th>
+        <th scope="col">Fecha Emision</th>
+        <th scope="col">Fecha Asignada</th>
+        <th scope="col">Fecha Entrega</th>
         <th scope="col" style="width:90px;">&nbsp;</th>
       </tr>
     </thead>
@@ -31,7 +33,9 @@
 			<?php foreach($datos as $bodega): ?>
 				<tr>
 					<td><?php echo $bodega->codigo; ?></td>
-					<td><?php echo $bodega->nombre;?></td>
+					<td><?php echo formatearFecha(substr($bodega->fecha_emision, 0, 10));?></td>
+          <td><?php echo formatearFecha(substr($bodega->fecha_asignada, 0, 10));?></td>
+          <td><?php echo formatearFecha(substr($bodega->fecha_entrega, 0, 10));?></td>
 					<td class="editar">
             <a class="eliminar" rel="<?php echo $bodega->codigo; ?>" href="#">
               <button title="Ver" type="button" class="btn btn-success btn-sm"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>

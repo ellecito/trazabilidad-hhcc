@@ -50,4 +50,7 @@ $(function(){
        }
      }
    });
+
+   $("#fecha").datepicker();
+   $("#fecha_retorno").datepicker();
 });
