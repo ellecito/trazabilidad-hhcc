@@ -39,6 +39,8 @@
                     <li><a href="<?php echo base_url(); ?>motivo-solicitudes/">Motivo Solicitudes</a></li>
                     <li><a href="<?php echo base_url(); ?>unidades/">Unidades</a></li>
                     <li><a href="<?php echo base_url(); ?>box/">Box</a></li>
+                    <li><a href="<?php echo base_url(); ?>servicios/">Servicios</a></li>
+                    <li><a href="<?php echo base_url(); ?>motivo-conforme/">Motivo Conforme</a></li>
                 </ul>
             </li>
             <li><a href="<?php echo base_url(); ?>generar_agenda/">Generar Agenda</a></li>

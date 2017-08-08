@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     07/08/2017 20:25:18                          */
+/* Created on:     08/08/2017 15:00:24                          */
 /*==============================================================*/
 
 
@@ -61,6 +61,7 @@ create table agenda
    pa_codigo            bigint not null,
    me_codigo            bigint not null,
    bx_codigo            smallint not null,
+   es_codigo            smallint not null,
    primary key (ag_codigo)
 );
 
@@ -113,11 +114,11 @@ create table cajon
 create table conformidad
 (
    co_codigo            bigint not null,
-   pa_codigo            bigint not null,
-   tc_codigo            int not null,
    co_fecha             datetime,
    co_cantidad          smallint,
    co_obs               text,
+   tc_codigo            int not null,
+   pa_codigo            bigint not null,
    primary key (co_codigo)
 );
 
@@ -142,6 +143,7 @@ create table especialidad
 (
    es_codigo            smallint not null,
    es_nombre            varchar(30),
+   se_codigo            bigint not null,
    primary key (es_codigo)
 );
 
@@ -211,11 +213,9 @@ create table motivo_solicitud
 create table nomina
 (
    no_codigo            bigint not null,
-   es_codigo            smallint not null,
-   me_codigo            bigint not null,
-   se_codigo            bigint not null,
    no_fecha_creada      datetime,
    no_fecha_asignada    datetime,
+   me_codigo            bigint not null,
    primary key (no_codigo)
 );
 
@@ -325,6 +325,9 @@ create table unidad
 alter table agenda add constraint fk_agenda_box foreign key (bx_codigo)
       references box (bx_codigo) on delete restrict on update restrict;
 
+alter table agenda add constraint fk_agenda_especialidad foreign key (es_codigo)
+      references especialidad (es_codigo) on delete restrict on update restrict;
+
 alter table agenda add constraint fk_agenda_medico foreign key (me_codigo)
       references medico (me_codigo) on delete restrict on update restrict;
 
@@ -352,6 +355,9 @@ alter table division add constraint fk_anaquel_division foreign key (an_codigo)
 alter table division add constraint fk_funcionario_division foreign key (fu_codigo)
       references funcionario (fu_codigo) on delete restrict on update restrict;
 
+alter table especialidad add constraint fk_servicio_especialidad foreign key (se_codigo)
+      references servicio (se_codigo) on delete restrict on update restrict;
+
 alter table funcionario add constraint fk_funcionario_tipo foreign key (ti_codigo)
       references tipo_funcionario (ti_codigo) on delete restrict on update restrict;
 
@@ -361,14 +367,8 @@ alter table medico_especialidad add constraint fk_medico_especialidad foreign ke
 alter table medico_especialidad add constraint fk_medico_especialidad2 foreign key (es_codigo)
       references especialidad (es_codigo) on delete restrict on update restrict;
 
-alter table nomina add constraint fk_nomina_especialidad foreign key (es_codigo)
-      references especialidad (es_codigo) on delete restrict on update restrict;
-
 alter table nomina add constraint fk_nomina_medico foreign key (me_codigo)
       references medico (me_codigo) on delete restrict on update restrict;
-
-alter table nomina add constraint fk_nomina_servicio foreign key (se_codigo)
-      references servicio (se_codigo) on delete restrict on update restrict;
 
 alter table nomina_agenda add constraint fk_nomina_agenda foreign key (no_codigo)
       references nomina (no_codigo) on delete restrict on update restrict;

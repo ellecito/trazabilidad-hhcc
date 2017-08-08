@@ -6,6 +6,7 @@ class Especialidades extends CI_Controller {
 		parent::__construct();
 		if(!$this->session->userdata("usuario")) redirect(base_url());
 		$this->load->model("modelo_especialidad", "objEspecialidad");
+		$this->load->model("servicios/modelo_servicios", "objServicio");
 		#current
 		$this->layout->current = 2;
 		$this->layout->subCurrent = 7;
@@ -66,6 +67,7 @@ class Especialidades extends CI_Controller {
 
 			#validaciones
 			$this->form_validation->set_rules('nombre', 'Nombre', 'required');
+			$this->form_validation->set_rules('servicio', 'Servicio', 'required');
 
 			$this->form_validation->set_message('required', '* %s es obligatorio');
 			$this->form_validation->set_error_delimiters('<div>','</div>');
@@ -77,7 +79,8 @@ class Especialidades extends CI_Controller {
 			
 			$datos = array(
 				'es_codigo' => $this->objEspecialidad->getLastId(),
-				'es_nombre' => $this->input->post('nombre')
+				'es_nombre' => $this->input->post('nombre'),
+				'se_codigo' => $this->input->post('servicio')
 			);
 			
 			if($this->objEspecialidad->insertar($datos)){
@@ -96,13 +99,19 @@ class Especialidades extends CI_Controller {
 			$this->layout->setMeta('description','Agregar Especialidad');
 			$this->layout->setMeta('keywords','Agregar Especialidad');
 
+			#JS - Multiple select boxes
+			$this->layout->css('js/jquery/bootstrap-multi-select/dist/css/bootstrap-select.css');
+			$this->layout->js('js/jquery/bootstrap-multi-select/js/bootstrap-select.js');
+
 			#js
 			$this->layout->js('js/sistema/especialidades/agregar.js');
 
 			#nav
 			$this->layout->nav(array("Especialidades "=> "especialidades", "Agregar Especialidad" =>"/"));
 
-			$this->layout->view('agregar');
+			$contenido["servicios"] = $this->objServicio->listar();
+
+			$this->layout->view('agregar', $contenido);
 		}
 	}
 
@@ -112,6 +121,7 @@ class Especialidades extends CI_Controller {
 
 			#validaciones
 			$this->form_validation->set_rules('nombre', 'Nombre', 'required');
+			$this->form_validation->set_rules('servicio', 'Servicio', 'required');
 
 			$this->form_validation->set_message('required', '* %s es obligatorio');
 			$this->form_validation->set_error_delimiters('<div>','</div>');
@@ -122,7 +132,8 @@ class Especialidades extends CI_Controller {
 			}
 
 			$datos = array(
-				'es_nombre' => $this->input->post('nombre')
+				'es_nombre' => $this->input->post('nombre'),
+				'se_codigo' => $this->input->post('servicio')
 			);
 
 			if($this->objEspecialidad->actualizar($datos,array("es_codigo"=>$this->input->post('codigo')))){
@@ -137,6 +148,10 @@ class Especialidades extends CI_Controller {
 			#js
 			$this->layout->js('js/sistema/especialidades/editar.js');
 
+			#JS - Multiple select boxes
+			$this->layout->css('js/jquery/bootstrap-multi-select/dist/css/bootstrap-select.css');
+			$this->layout->js('js/jquery/bootstrap-multi-select/js/bootstrap-select.js');
+
 			#title
 			$this->layout->title('Editar Especialidad');
 
@@ -148,6 +163,8 @@ class Especialidades extends CI_Controller {
 			#contenido
 			if($contenido['especialidad'] = $this->objEspecialidad->obtener(array("es_codigo" => $codigo)));
 			else show_error('');
+
+			$contenido["servicios"] = $this->objServicio->listar();
 
 			#nav
 			$this->layout->nav(array("Especialidades "=>"especialidades", "Editar Especialidad" =>"/"));
