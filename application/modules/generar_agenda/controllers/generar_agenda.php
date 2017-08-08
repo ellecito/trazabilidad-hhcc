@@ -26,7 +26,7 @@ class Generar_agenda extends CI_Controller {
 		$medicos = $this->objMedico->listar(array("me_estado" => 1));
 		$boxs = $this->objBox->listar();
 
-		for ($i=0; $i < 1000 ; $i++) {
+		for ($i=0; $i < 100 ; $i++) {
 			$datos = array(
 				"ag_codigo" => $this->objAgenda->getLastId(),
 				"ag_hora_pedido" => date("Y-m-d H:i:s"),

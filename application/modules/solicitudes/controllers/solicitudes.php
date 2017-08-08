@@ -139,12 +139,18 @@ class Solicitudes extends CI_Controller {
 		}
 	}
 
-	/*public function editar($codigo = false){
+	public function editar($codigo = false){
 
 		if($this->input->post()){
 
 			#validaciones
-			$this->form_validation->set_rules('nombre', 'Nombre', 'required');
+			$this->form_validation->set_rules('fecha', 'Fecha Uso', 'required');
+			$this->form_validation->set_rules('fecha_retorno', 'Fecha Retorno', 'required');
+			$this->form_validation->set_rules('paciente', 'Paciente', 'required');
+			$this->form_validation->set_rules('medico', 'Medico', 'required');
+			$this->form_validation->set_rules('motivo', 'Motivo', 'required');
+			$this->form_validation->set_rules('fecha', 'Fecha', 'required');
+			$this->form_validation->set_rules('detalle', 'Detalle', 'required');
 
 			$this->form_validation->set_message('required', '* %s es obligatorio');
 			$this->form_validation->set_error_delimiters('<div>','</div>');
@@ -155,10 +161,17 @@ class Solicitudes extends CI_Controller {
 			}
 
 			$datos = array(
-				'bo_nombre' => $this->input->post('nombre')
+				'so_fecha_emision' => date("Y-m-d H:i:s"),
+				'so_fecha_asignada' => date("Y-m-d", strtotime($this->input->post('fecha'))),
+				'so_fecha_entrega' => date("Y-m-d", strtotime($this->input->post('fecha_retorno'))),
+				'fu_codigo' => $this->session->userdata("usuario")->codigo,
+				'me_codigo' => $this->input->post('medico'),
+				'pa_codigo' => $this->input->post('paciente'),
+				'mo_codigo' => $this->input->post('motivo'),
+				'so_detalle' => $this->input->post('detalle')
 			);
 
-			if($this->objBodega->actualizar($datos,array("bo_codigo"=>$this->input->post('codigo')))){
+			if($this->objBodega->actualizar($datos,array("so_codigo"=>$this->input->post('codigo')))){
 				echo json_encode(array("result"=>true));
 				exit;
 			}else{
@@ -166,27 +179,47 @@ class Solicitudes extends CI_Controller {
 				exit;
 			}
 		}else{
-			if(!$codigo) redirect(base_url() . "bodegas/");
+			if(!$codigo) redirect(base_url() . "solicitudes/");
+
+			#JS - Datepicker
+			$this->layout->css('js/jquery/ui/1.10.4/ui-lightness/jquery-ui-1.10.4.custom.min.css');
+			$this->layout->js('js/jquery/ui/1.10.4/jquery-ui-1.10.4.custom.min.js');
+			$this->layout->js('js/jquery/ui/1.10.4/jquery.ui.datepicker-es.js');
+
+			#JS - Multiple select boxes
+			$this->layout->css('js/jquery/bootstrap-multi-select/dist/css/bootstrap-select.css');
+			$this->layout->js('js/jquery/bootstrap-multi-select/js/bootstrap-select.js');
+
 			#js
-			$this->layout->js('js/sistema/bodegas/editar.js');
+			$this->layout->js('js/sistema/solicitudes/editar.js');
 
 			#title
-			$this->layout->title('Editar Bodega');
+			$this->layout->title('Editar Solicitud');
 
 			#metas
-			$this->layout->setMeta('title','Editar Bodega');
-			$this->layout->setMeta('description','Editar Bodega');
-			$this->layout->setMeta('keywords','Editar Bodega');
+			$this->layout->setMeta('title','Editar Solicitud');
+			$this->layout->setMeta('description','Editar Solicitud');
+			$this->layout->setMeta('keywords','Editar Solicitud');
+
+			$contenido = array(
+				"solicitud" => $this->objSolicitud->obtener(array("so_codigo" => $codigo)),
+				"pacientes" => $this->objPaciente->listar(),
+				"medicos" => $this->objMedicos->listar(),
+				"funcionarios" => $this->objFuncionario->listar(),
+				"motivos" => $this->objMotivo->listar(),
+				"objSolicitud" => $this->objMotivo->listar()
+			);
 
 			#contenido
-			if($contenido['bodega'] = $this->objBodega->obtener(array("bo_codigo" => $codigo)));
-			else show_error('');
+			if($contenido['solicitud']){
+
+			}else show_error('');
 
 			#nav
-			$this->layout->nav(array("Bodegas "=>"bodegas", "Editar Bodega" =>"/"));
+			$this->layout->nav(array("Solicitudes "=>"solicitudes", "Editar Solicitud" =>"/"));
 			$this->layout->view('editar',$contenido);
 
 		}
-	}*/
+	}
 	
 }
