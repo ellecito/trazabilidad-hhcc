@@ -1,0 +1,128 @@
+/***** ENLACE SOLAR - NAF *****/
+body{ background-color:#fff;}
+ul.nav .glyphicon{ margin-right:5px;}
+.navbar-nav.navbar-user > li {
+    border-bottom: none;
+}
+ul.dropdown-menu li.active .glyphicon{ display:inline-block;}
+#login.col-sm-4{ float:none; margin:0 auto;}
+#login.col-sm-4 .form-horizontal{
+	background-color: #FFF;
+	padding:20px 60px;
+	margin:0 -40px;
+	border:1px solid #ddd;
+}
+.navbar-inverse .glyphicon{ color:#81b581;}
+.modal-backdrop.fade.in {
+    opacity: 0.9;
+}
+#login .page-header{ border:none; margin-bottom:0;}
+#login h1{ font-weight:bold;}
+#aeurus{ background-color:#333; text-align:right; padding:8px 0; position:fixed; width:100%; bottom:0;}
+#aeurus img{ vertical-align:text-top; margin-right:8px;}
+
+.side-nav .active .dropdown-menu { display: block;}
+.side-nav .dropdown-menu li.active a{
+	background:#dbac3b url(/imagenes/template/menu-hover.png) 18px 12px no-repeat !important;
+}
+
+#multiselectForm .table-hover .bootstrap-select .btn{ line-height:16px;}
+#multiselectForm .table-hover .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
+  width: 290px;
+}
+#multiselectForm .table thead > tr > th, #multiselectForm .table tbody > tr > th, #multiselectForm .table tfoot > tr > th, #multiselectForm .table thead > tr > td, #multiselectForm .table tbody > tr > td, #multiselectForm .table tfoot > tr > td{ vertical-align:middle;}
+
+.adjunto-doc{
+	background: url(../imagenes/sitio/documento.png) 0 0 no-repeat;
+	display:table-cell;
+	padding:2px 0 4px 34px;
+	margin-top:-2px;
+}
+
+/***** Archivo Adjunto *****/
+.nice .NFI-button {
+    color: #fff;
+    font-size: 14px;
+    line-height: 38px;
+	background-color:#428bca;
+    width: 25%;
+    height: 38px;
+    transition: all 200ms ease 0s;
+	-webkit-border-radius: 0 4px 4px 0;
+	-moz-border-radius: 0 4px 4px 0;
+	border-radius: 0 4px 4px 0;
+}
+.nice .NFI-button:hover {
+	background-color:#3276b1;
+}
+.nice .NFI-filename {
+	color:#555;
+    font-size: 14px;
+    line-height: 38px;
+    height: 38px;
+    background-color: #ffffff;
+    padding: 0 16px;
+    width: 75%;
+	-webkit-border-radius: 4px 0 0 4px;
+	-moz-border-radius: 4px 0 0 4px;
+	border-radius: 4px 0 0 4px;
+    border: 1px solid #cccccc;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+}
+
+
+#mapa iframe{ width:100%;}
+.text-box{ text-align:center; background-color:#fbfaf8; clear:both; padding:15px 0; margin:20px 0;}
+.separacion{ padding:20px;}
+
+
+/**** RESPONSIVE ****/
+@media (min-width: 768px) and (max-width: 1080px) {
+.all-responsive {
+    width: 100%;
+    margin-bottom: 15px;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    border: 1px solid #dddddd;
+  }
+  .all-responsive table{ width:100%;}
+  .all-responsive > .table > thead > tr > th,
+  .all-responsive > .table > tbody > tr > th,
+  .all-responsive > .table > tfoot > tr > th,
+  .all-responsive > .table > thead > tr > td,
+  .all-responsive > .table > tbody > tr > td,
+  .all-responsive > .table > tfoot > tr > td {
+    white-space: nowrap;
+  }
+}
+@media (max-height: 768px) {
+	footer{ position:relative; height:70px;}
+	#wrapper{ /*padding-bottom:70px;*/ min-height:520px;}
+}
+@media (min-width: 768px) and (max-width: 896px) {
+.form-control{ min-width:150px; margin-bottom:5px;}
+}
+@media (max-width: 767px) {
+footer{
+	font-size: 13px;
+	background: #141414 url(../imagenes/template/logo-footer.png) 15px 10px no-repeat;
+}
+footer address span{ font-size:2px; color: #141414; display:block;}
+footer address{ margin:0; padding:14px 0 10px 125px;}
+}
+@media (max-width: 530px) {
+.panel-relative ul{ position:relative; bottom:0; right:auto;}
+.scroll-background td { padding: 20px 5px 15px 5px;}
+.scroll-background td.download { padding: 20px 15px 15px 5px;}
+.scroll-background .doc-pdf img { margin: 0 0 0 10px;}
+img.photo-edit{ width:100%; height:auto; margin:0 0 16px;}
+}
+@media (max-width: 400px) {
+.media-list.editable .pull-left{ float:none !important;}
+.media-list.editable .pull-left img, .media-list.editable img.pull-left{ width:100%; height:auto;}
+}
+
+#mapa{
+	height:150px;
+}

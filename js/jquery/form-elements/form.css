@@ -1,0 +1,53 @@
+.checkbox, .radio {
+	width: 24px;
+	height: 20px;
+	padding: 0 6px 0 0;
+	background: url(checkbox.png) no-repeat;
+	display: block;
+	clear: left;
+	float: left;
+}
+.radio {
+	background: url(radio.png) no-repeat;
+}
+.select {
+	color: #6b6b6b;
+	font-size:1.5em;
+	font-size:1.5rem;
+	line-height:34px;
+	position: absolute;
+	width: 100%; /* With the padding included, the width is 190 pixels: the actual width of the image. */
+	min-width:70px;
+	height: 34px;
+	padding: 0 28px 0 10px;
+	background: #FFF url(select.png) right center no-repeat;
+	overflow: hidden;
+	border:1px solid #cbcbcb;
+	/*border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;*/
+}
+select.styled{ min-width:69px;}
+.form-select select{ margin:0;}
+select{
+	background-color: #fff;
+	height: 34px;
+	border: none;
+}
+select option{
+	display: block;
+	padding: 4px 0;
+	text-indent: 10px;
+}
+
+.background-color .select {
+	font-size: 1.3em;
+	font-size: 1.3rem;
+	background: #fff url(select.png) right center no-repeat;
+	border:1px solid #fff;
+}
+.background-color select{
+	background-color: #fff;
+	height:35px;
+	border:none;
+}
