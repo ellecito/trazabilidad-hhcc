@@ -171,7 +171,7 @@ class Solicitudes extends CI_Controller {
 				'so_detalle' => $this->input->post('detalle')
 			);
 
-			if($this->objBodega->actualizar($datos,array("so_codigo"=>$this->input->post('codigo')))){
+			if($this->objSolicitud->actualizar($datos,array("so_codigo"=>$this->input->post('codigo')))){
 				echo json_encode(array("result"=>true));
 				exit;
 			}else{

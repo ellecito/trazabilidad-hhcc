@@ -38,7 +38,7 @@ class Motivo_conforme extends CI_Controller {
 			$contenido['url'] = $url = '/';
 
 		#paginacion
-		$config['batc_url'] = batc_url() . 'motivo_conforme/';
+		$config['batc_url'] = base_url() . 'motivo_conforme/';
 		$config['total_rows'] = count($this->objMotivo->listar($where));
 		$config['per_page'] = 15;
 		$config['uri_segment'] = $segment = 3;

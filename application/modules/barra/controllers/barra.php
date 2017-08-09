@@ -5,6 +5,7 @@ class Barra extends CI_Controller {
 	function __construct(){
 		parent::__construct();
 		if(!$this->session->userdata("usuario")) redirect(base_url());
+		$this->load->model("pacientes/modelo_pacientes", "objPaciente");
 		$this->layout->current = 1;
 	}
 
@@ -18,8 +19,10 @@ class Barra extends CI_Controller {
 		$this->layout->setMeta('keywords','Trazabilidad HHCC');
 
 		$generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
+
+		$pacientes = $this->objPaciente->listar();
 		
-		$this->layout->view('index', array("generator" => $generator));
+		$this->layout->view('index', array("generator" => $generator, "pacientes" => $pacientes));
 	}
 	
 }
