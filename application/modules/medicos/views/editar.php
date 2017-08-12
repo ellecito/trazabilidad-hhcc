@@ -38,6 +38,26 @@
         </select>
       </div>
     </div>
+    <div class="form-group">
+      <label for="especialidad" class="col-sm-2 control-label">Especialidad</label>
+      <?php if(count($especialidades)>1){ ?>
+          <a href="#" id="add">Agregar +</a>
+          <?php } ?>
+      <div class="col-sm-4" id="div-especialidad">
+          <?php if($medico_especialidades){ ?>
+          <?php foreach($medico_especialidades as $med_esp){ ?>
+          <select id="especialidad" name="especialidad[]" class="form-control especialidad validate[required]">
+             <option disabled value="">Seleccione</option>
+             <?php if($especialidades){ ?>
+             <?php foreach($especialidades as $especialidad){ ?>
+                <option value="<?php echo $especialidad->codigo; ?>" <?php if($med_esp->es_codigo == $especialidad->codigo) echo "selected"; ?>><?php echo $especialidad->nombre; ?></option>
+             <?php } ?>
+             <?php } ?>
+          </select>
+          <?php } ?>
+          <?php } ?>
+      </div>
+    </div>
     <div class="text-box">
       <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
     </div>

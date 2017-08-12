@@ -63,4 +63,26 @@ $(function(){
     },
     format_on: 'keyup'
   });
+
+   $("#add").click(function(e){
+      e.preventDefault();
+      var values = [];
+      $(".especialidad").each(function(i , sel){
+        var selectValue = $(sel).val();
+        if(selectValue != null) values.push(selectValue);
+      });
+      
+      $.ajax({
+        url: window.location.pathname.replace("/editar/" + $("#codigo").val(), "") + "/especialidades/",
+        type: 'post',
+        dataType: 'json',
+        data: "especialidades=" + values,
+        success: function(json){
+          if(json.result){
+            $("#div-especialidad").append(json.html);
+            $("#div-especialidad").trigger("chosen:updated");
+          }
+        }
+      });
+   });
 });

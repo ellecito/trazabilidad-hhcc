@@ -64,7 +64,30 @@ $(function(){
     format_on: 'keyup'
   });
 
-   /*$("#especialidad").change(function(){
-      $(this).clone();
+   /*$(".especialidad").change(function(){
+      var html = $("#div-especialidad").html();
+      $("#div-especialidad").append(html);
    });*/
+
+   $("#add").click(function(e){
+      e.preventDefault();
+      var values = [];
+      $(".especialidad").each(function(i , sel){
+        var selectValue = $(sel).val();
+        if(selectValue != null) values.push(selectValue);
+      });
+      
+      $.ajax({
+        url: 'medicos/especialidades/',
+        type: 'post',
+        dataType: 'json',
+        data: "especialidades=" + values,
+        success: function(json){
+          if(json.result){
+            $("#div-especialidad").append(json.html);
+            $("#div-especialidad").trigger("chosen:updated");
+          }
+        }
+      });
+   });
 });

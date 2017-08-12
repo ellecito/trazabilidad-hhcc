@@ -6,7 +6,8 @@ class Medicos extends CI_Controller {
 		parent::__construct();
 		if(!$this->session->userdata("usuario")) redirect(base_url());
 		$this->load->model("modelo_medicos", "objMedico");
-		//$this->load->model("modelo_especialidad", "objEspecialidad");
+		$this->load->model("modelo_medicos_especialidades", "objRel");
+		$this->load->model("especialidades/modelo_especialidad", "objEspecialidad");
 		#current
 		$this->layout->current = 2;
 		$this->layout->subCurrent = 3;
@@ -96,6 +97,17 @@ class Medicos extends CI_Controller {
 			);
 			
 			if($this->objMedico->insertar($datos)){
+				$especialidades = array();
+				foreach($this->input->post("especialidad") as $especialidad){
+					if(!in_array($especialidad, $especialidades)){
+						$rel = array(
+							"me_codigo" => $datos["me_codigo"],
+							"es_codigo" => $especialidad
+						);
+						$this->objRel->insertar($rel);
+					}
+					$especialidades[] = $especialidad;
+				}
 				echo json_encode(array("result"=>true));
 				exit;
 			}else{
@@ -124,9 +136,9 @@ class Medicos extends CI_Controller {
 			#nav
 			$this->layout->nav(array("Médicos "=> "medicos", "Agregar Médico" =>"/"));
 
-			//$contenido["especialidades"] = $this->objEspecialidad->listar();
+			$contenido["especialidades"] = $this->objEspecialidad->listar();
 
-			$this->layout->view('agregar');
+			$this->layout->view('agregar', $contenido);
 		}
 	}
 
@@ -139,7 +151,7 @@ class Medicos extends CI_Controller {
 			$this->form_validation->set_rules('email', 'Email', 'required');
 			$this->form_validation->set_rules('apellidos', 'Apellidos', 'required');
 			$this->form_validation->set_rules('estado', 'Estado', 'required');
-			//$this->form_validation->set_rules('especialidad', 'Especialidad', 'required');
+			$this->form_validation->set_rules('especialidad', 'Especialidad', 'required');
 
 			$this->form_validation->set_message('required', '* %s es obligatorio');
 			$this->form_validation->set_error_delimiters('<div>','</div>');
@@ -158,6 +170,18 @@ class Medicos extends CI_Controller {
 			);
 
 			if($this->objMedico->actualizar($datos,array("me_codigo"=>$this->input->post('codigo')))){
+				$especialidades = array();
+				$this->objRel->eliminar(array("me_codigo" => $this->input->post('codigo')));
+				foreach($this->input->post("especialidad") as $especialidad){
+					if(!in_array($especialidad, $especialidades)){
+						$rel = array(
+							"me_codigo" => $this->input->post('codigo'),
+							"es_codigo" => $especialidad
+						);
+						$this->objRel->insertar($rel);
+					}
+					$especialidades[] = $especialidad;
+				}
 				echo json_encode(array("result"=>true));
 				exit;
 			}else{
@@ -190,7 +214,9 @@ class Medicos extends CI_Controller {
 
 			#nav
 			$this->layout->nav(array("Médicos "=>"medicos", "Editar Médico" =>"/"));
-			//$contenido["especialidades"] = $this->objEspecialidad->listar();
+			$contenido["especialidades"] = $this->objEspecialidad->listar();
+			$contenido["medico_especialidades"] = $this->objRel->listar(array("me_codigo" => $codigo));
+
 			$this->layout->view('editar',$contenido);
 
 		}
@@ -205,5 +231,16 @@ class Medicos extends CI_Controller {
 		catch(Exception $e){
 			echo json_encode(array("result"=>false,"msg"=>"Ha ocurrido un error inesperado. Por favor, inténtelo nuevamente."));
 		}
+	}
+
+	public function especialidades(){
+		$especialidades = $this->objEspecialidad->listar();
+		$html = "<select name='especialidad[]' class='form-control especialidad'><option selected>Seleccione</option>";
+		foreach($especialidades as $especialidad){
+			$html.= "<option value='" . $especialidad->codigo . "'>" . $especialidad->nombre . "</option>";
+		}
+		$html.= "</select>";
+		echo json_encode(array("result"=>true, "html" => $html));
+		exit;
 	}
 }

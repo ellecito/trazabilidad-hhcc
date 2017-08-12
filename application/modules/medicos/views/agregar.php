@@ -37,19 +37,22 @@
         </select>
       </div>
     </div>
-    <!--<div class="form-group">
+    <div class="form-group">
       <label for="especialidad" class="col-sm-2 control-label">Especialidad</label>
-      <div class="col-sm-4">
-        <select id="especialidad" name="especialidad" class="selectpicker validate[required]">
-           <option disabled selected>Seleccione</option>
-           <?php //if($especialidades){ ?>
-           <?php //foreach($especialidades as $especialidad){ ?>
-              <option value="<?php //echo $especialidad->codigo; ?>"><?php //echo $especialidad->nombre; ?></option>
-           <?php //} ?>
-           <?php //} ?>
-        </select>
+      <?php if(count($especialidades)>1){ ?>
+          <a href="#" id="add">Agregar +</a>
+          <?php } ?>
+      <div class="col-sm-4" id="div-especialidad">
+          <select id="especialidad" name="especialidad[]" class="form-control especialidad validate[required]">
+             <option disabled selected value="">Seleccione</option>
+             <?php if($especialidades){ ?>
+             <?php foreach($especialidades as $especialidad){ ?>
+                <option value="<?php echo $especialidad->codigo; ?>"><?php echo $especialidad->nombre; ?></option>
+             <?php } ?>
+             <?php } ?>
+          </select>
       </div>
-    </div>-->
+    </div>
     <div class="text-box">
       <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
     </div>
