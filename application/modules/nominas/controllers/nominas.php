@@ -57,7 +57,7 @@ class Nominas extends CI_Controller {
 			$params = array();
 			parse_str($this->input->post("formData"), $params);
 			$where_medico = "me_estado = 1 AND me_codigo IN (" . implode(",", $params["medicos"]) . ")";
-			$where_especialidades = "es_codigo IN(" . implode(",", $params["especialidades"]) . ")";
+			$where_especialidades = "es_codigo IN (" . implode(",", $params["especialidades"]) . ")";
 			$where_boxs = "bx_codigo IN (" . implode(",", $params["boxs"]) . ")";
 			$where_fecha = "ag_hora_agendada >= '" . date("Y-m-d", strtotime(str_replace("/", "-", $params["fecha"]))) . " 00:00:00'";
 			//Armado de nominas
@@ -186,7 +186,7 @@ class Nominas extends CI_Controller {
 			}
 			$html.= "</table>";
 		}
-		$rutaPdf = "/archivos/";
+		$rutaPdf = base_url() . "archivos/";
 		if(!file_exists($_SERVER['DOCUMENT_ROOT'].$rutaPdf))
 			mkdir($_SERVER['DOCUMENT_ROOT'].$rutaPdf, 0777);
 		$rutaPdf .= "pdf/";
