@@ -6,11 +6,11 @@
   <div class="form-group">
     <label for="paciente" class="col-sm-2 control-label">Paciente</label>
     <div class="col-sm-4">
-      <select id="paciente" name="paciente" class="selectpicker validate[required]">
+      <select id="paciente" name="paciente" class="selectpicker validate[required]" data-live-search="true">
            <option disabled>Seleccione</option>
            <?php if($pacientes){ ?>
            <?php foreach($pacientes as $paciente){ ?>
-           <option value="<?php echo $paciente->codigo; ?>" <?php if($paciente->codigo == $conformidad->pa_codigo) echo "selected"; ?>><?php echo $paciente->nombres . " " . $paciente->apellidos; ?></option>
+           <option value="<?php echo $paciente->codigo; ?>" <?php if($paciente->codigo == $conformidad->pa_codigo) echo "selected"; ?>><?php echo $paciente->rut . " | " .$paciente->nombres . " " . $paciente->apellidos; ?></option>
            <?php } ?>
            <?php } ?>
            

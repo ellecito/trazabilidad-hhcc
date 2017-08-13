@@ -82,6 +82,11 @@ class Pacientes extends CI_Controller {
 				echo json_encode(array("result"=>false,"msg"=>"El RUT ya existe en el sistema"));
 				exit;
 			}
+
+			if($this->objPaciente->obtener(array("pa_hhcc" => $this->input->post('hhcc')))){
+				echo json_encode(array("result"=>false,"msg"=>"El HHCC ya existe en el sistema"));
+				exit;
+			}
 			
 			$datos = array(
 				'pa_codigo' => $this->objPaciente->getLastId(),
@@ -143,6 +148,22 @@ class Pacientes extends CI_Controller {
 				exit;
 			}
 
+			$paciente = $this->objPaciente->obtener(array("pa_codigo" => $codigo));
+
+			if($paciente->rut != $this->input->post('rut')){
+				if($this->objPaciente->obtener(array("pa_rut" => $this->input->post('rut')))){
+					echo json_encode(array("result"=>false,"msg"=>"El RUT ya existe en el sistema"));
+					exit;
+				}
+			}
+
+			if($paciente->hhcc != $this->input->post('hhcc')){
+				if($this->objPaciente->obtener(array("pa_hhcc" => $this->input->post('hhcc')))){
+					echo json_encode(array("result"=>false,"msg"=>"El HHCC ya existe en el sistema"));
+					exit;
+				}
+			}
+
 			$datos = array(
 				'pa_rut' => $this->input->post('rut'),
 				'pa_hhcc' => $this->input->post('hhcc'),
@@ -174,6 +195,9 @@ class Pacientes extends CI_Controller {
 			#JS - Multiple select boxes
 			$this->layout->css('js/jquery/bootstrap-multi-select/dist/css/bootstrap-select.css');
 			$this->layout->js('js/jquery/bootstrap-multi-select/js/bootstrap-select.js');
+
+			#RUT
+			$this->layout->js('js/jquery/validador-rut/jquery.Rut.js');
 
 			#contenido
 			if($contenido['paciente'] = $this->objPaciente->obtener(array("pa_codigo" => $codigo)));

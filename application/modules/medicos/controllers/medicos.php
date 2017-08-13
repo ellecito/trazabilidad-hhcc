@@ -86,6 +86,11 @@ class Medicos extends CI_Controller {
 				echo json_encode(array("result"=>false,"msg"=>"El RUT ya existe en el sistema"));
 				exit;
 			}
+
+			if($this->objMedico->obtener(array("me_email" => $this->input->post('email')))){
+				echo json_encode(array("result"=>false,"msg"=>"El Email ya existe en el sistema"));
+				exit;
+			}
 			
 			$datos = array(
 				'me_codigo' => $this->objMedico->getLastId(),
@@ -159,6 +164,22 @@ class Medicos extends CI_Controller {
 			if(!$this->form_validation->run()){
 				echo json_encode(array("result"=>false,"msg"=>validation_errors()));
 				exit;
+			}
+
+			$medico = $this->objMedico->obtener(array("me_codigo" => $codigo));
+
+			if($medico->rut != $this->input->post('rut')){
+				if($this->objMedico->obtener(array("me_rut" => $this->input->post('rut')))){
+					echo json_encode(array("result"=>false,"msg"=>"El RUT ya existe en el sistema"));
+					exit;
+				}
+			}
+
+			if($medico->email != $this->input->post('email')){
+				if($this->objMedico->obtener(array("me_email" => $this->input->post('email')))){
+					echo json_encode(array("result"=>false,"msg"=>"El Email ya existe en el sistema"));
+					exit;
+				}
 			}
 
 			$datos = array(

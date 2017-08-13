@@ -6,6 +6,9 @@ class Modelo_solicitud extends CI_Model {
 	function __construct(){
 		$this->tabla = "solicitud";
 		$this->prefijo = substr($this->tabla, 0, 2) . "_";
+		$this->load->model("medicos/modelo_medicos", "objMedicos");
+		$this->load->model("modelo_motivo_solicitud", "objMotivo");
+		$this->load->model("pacientes/modelo_pacientes", "objPaciente");
 		parent::__construct();
 	}
 	
@@ -58,6 +61,10 @@ class Modelo_solicitud extends CI_Model {
 				foreach(get_object_vars($resultado) as $key => $val){
 					$obj->{str_replace($this->prefijo, "", $key)} = $resultado->{$key};
 				}
+				$obj->paciente = $this->objPaciente->obtener(array("pa_codigo" => $obj->pa_codigo));
+				$obj->medico = $this->objMedicos->obtener(array("me_codigo" => $obj->me_codigo));
+				$obj->motivo = $this->objMotivo->obtener(array("mo_codigo" => $obj->mo_codigo));
+				unset($obj->pa_codigo); unset($obj->me_codigo); unset($obj->mo_codigo);
 				$listado[] = $obj;
 			}
 			return $listado;

@@ -85,6 +85,11 @@ class Funcionarios extends CI_Controller {
 				echo json_encode(array("result"=>false,"msg"=>"El RUT ya existe en el sistema"));
 				exit;
 			}
+
+			if($this->objFuncionario->obtener(array("fu_email" => $this->input->post('email')))){
+				echo json_encode(array("result"=>false,"msg"=>"El Email ya existe en el sistema"));
+				exit;
+			}
 			
 			$datos = array(
 				'fu_codigo' => $this->objFuncionario->getLastId(),
@@ -148,6 +153,22 @@ class Funcionarios extends CI_Controller {
 			if(!$this->form_validation->run()){
 				echo json_encode(array("result"=>false,"msg"=>validation_errors()));
 				exit;
+			}
+
+			$funcionario = $this->objFuncionario->obtener(array("fu_codigo" => $codigo));
+
+			if($funcionario->rut != $this->input->post('rut')){
+				if($this->objFuncionario->obtener(array("fu_rut" => $this->input->post('rut')))){
+					echo json_encode(array("result"=>false,"msg"=>"El RUT ya existe en el sistema"));
+					exit;
+				}
+			}
+
+			if($funcionario->email != $this->input->post('email')){
+				if($this->objFuncionario->obtener(array("fu_email" => $this->input->post('email')))){
+					echo json_encode(array("result"=>false,"msg"=>"El Email ya existe en el sistema"));
+					exit;
+				}
 			}
 
 			$datos = array(

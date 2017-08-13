@@ -6,6 +6,8 @@ class Modelo_conformidad extends CI_Model {
 	function __construct(){
 		$this->tabla = "conformidad";
 		$this->prefijo = substr($this->tabla, 0, 2) . "_";
+		$this->load->model("pacientes/modelo_pacientes", "objPaciente");
+		$this->load->model("motivo_conforme/modelo_motivo_conforme", "objMotivo");
 		parent::__construct();
 	}
 	
@@ -58,6 +60,10 @@ class Modelo_conformidad extends CI_Model {
 				foreach(get_object_vars($resultado) as $key => $val){
 					$obj->{str_replace($this->prefijo, "", $key)} = $resultado->{$key};
 				}
+				$obj->motivo = $this->objMotivo->obtener(array("tc_codigo" => $obj->tc_codigo));
+				$obj->paciente = $this->objPaciente->obtener(array("pa_codigo" => $obj->pa_codigo));
+				unset($obj->tc_codigo);
+				unset($obj->pa_codigo);
 				$listado[] = $obj;
 			}
 			return $listado;

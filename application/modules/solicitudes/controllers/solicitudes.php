@@ -68,12 +68,11 @@ class Solicitudes extends CI_Controller {
 		if($this->input->post()){
 
 			#validaciones
-			$this->form_validation->set_rules('fecha', 'Fecha Uso', 'required');
+			$this->form_validation->set_rules('fecha_entrega', 'Fecha Entrega', 'required');
 			$this->form_validation->set_rules('fecha_retorno', 'Fecha Retorno', 'required');
 			$this->form_validation->set_rules('paciente', 'Paciente', 'required');
 			$this->form_validation->set_rules('medico', 'Medico', 'required');
 			$this->form_validation->set_rules('motivo', 'Motivo', 'required');
-			$this->form_validation->set_rules('fecha', 'Fecha', 'required');
 			$this->form_validation->set_rules('detalle', 'Detalle', 'required');
 
 			$this->form_validation->set_message('required', '* %s es obligatorio');
@@ -87,8 +86,8 @@ class Solicitudes extends CI_Controller {
 			$datos = array(
 				'so_codigo' => $this->objSolicitud->getLastId(),
 				'so_fecha_emision' => date("Y-m-d H:i:s"),
-				'so_fecha_asignada' => date("Y-m-d", strtotime($this->input->post('fecha'))),
-				'so_fecha_entrega' => date("Y-m-d", strtotime($this->input->post('fecha_retorno'))),
+				'so_fecha_asignada' => date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_entrega')))),
+				'so_fecha_entrega' => date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_retorno')))),
 				'fu_codigo' => $this->session->userdata("usuario")->codigo,
 				'me_codigo' => $this->input->post('medico'),
 				'pa_codigo' => $this->input->post('paciente'),
@@ -144,12 +143,11 @@ class Solicitudes extends CI_Controller {
 		if($this->input->post()){
 
 			#validaciones
-			$this->form_validation->set_rules('fecha', 'Fecha Uso', 'required');
+			$this->form_validation->set_rules('fecha_entrega', 'Fecha Entrega', 'required');
 			$this->form_validation->set_rules('fecha_retorno', 'Fecha Retorno', 'required');
 			$this->form_validation->set_rules('paciente', 'Paciente', 'required');
 			$this->form_validation->set_rules('medico', 'Medico', 'required');
 			$this->form_validation->set_rules('motivo', 'Motivo', 'required');
-			$this->form_validation->set_rules('fecha', 'Fecha', 'required');
 			$this->form_validation->set_rules('detalle', 'Detalle', 'required');
 
 			$this->form_validation->set_message('required', '* %s es obligatorio');
@@ -161,9 +159,8 @@ class Solicitudes extends CI_Controller {
 			}
 
 			$datos = array(
-				'so_fecha_emision' => date("Y-m-d H:i:s"),
-				'so_fecha_asignada' => date("Y-m-d", strtotime($this->input->post('fecha'))),
-				'so_fecha_entrega' => date("Y-m-d", strtotime($this->input->post('fecha_retorno'))),
+				'so_fecha_asignada' => date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_entrega')))),
+				'so_fecha_entrega' => date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_retorno')))),
 				'fu_codigo' => $this->session->userdata("usuario")->codigo,
 				'me_codigo' => $this->input->post('medico'),
 				'pa_codigo' => $this->input->post('paciente'),

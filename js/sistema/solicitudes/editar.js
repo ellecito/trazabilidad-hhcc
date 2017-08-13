@@ -51,6 +51,6 @@ $(function(){
      }
    });
 
-   $("#fecha").datepicker();
+   $("#fecha_entrega").datepicker();
    $("#fecha_retorno").datepicker();
 });

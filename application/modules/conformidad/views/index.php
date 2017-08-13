@@ -23,6 +23,8 @@
       <tr>
         <th scope="col" style="width:90px;">Código</th>
         <th scope="col">Fecha</th>
+        <th scope="col">Motivo</th>
+        <th scope="col">Paciente</th>
         <th scope="col">Cantidad</th>
         <th scope="col" style="width:90px;">&nbsp;</th>
       </tr>
@@ -33,6 +35,8 @@
 				<tr>
 					<td><?php echo $conformidad->codigo; ?></td>
 					<td><?php echo formatearFecha(substr($conformidad->fecha, 0, 10));?></td>
+          <td><?php echo $conformidad->motivo->nombre; ?></td>
+          <td><?php echo $conformidad->paciente->rut . " | " .$conformidad->paciente->nombres . " " . $conformidad->paciente->apellidos; ?></td>
           <td><?php echo $conformidad->cantidad; ?></td>
 					<td class="editar">
             <a class="eliminar" rel="<?php echo $conformidad->codigo; ?>" href="#">

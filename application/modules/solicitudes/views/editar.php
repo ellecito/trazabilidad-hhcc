@@ -6,20 +6,20 @@
   <div class="form-group">
     <label for="paciente" class="col-sm-2 control-label">Paciente</label>
     <div class="col-sm-4">
-      <select id="paciente" name="paciente" class="selectpicker validate[required]">
+      <select id="paciente" name="paciente" class="selectpicker validate[required]" data-live-search="true">
            <option disabled>Seleccione</option>
            <?php if($pacientes){ ?>
            <?php foreach($pacientes as $paciente){ ?>
-           <option value="<?php echo $paciente->codigo; ?>" <?php if($paciente->codigo == $solicitud->pa_codigo) echo "selected"; ?>><?php echo $paciente->nombres . " " . $paciente->apellidos; ?></option>
+           <option value="<?php echo $paciente->codigo; ?>" <?php if($paciente->codigo == $solicitud->pa_codigo) echo "selected"; ?>><?php echo $paciente->rut . " | " . $paciente->nombres . " " . $paciente->apellidos; ?></option>
            <?php } ?>
            <?php } ?>
            
         </select>
     </div>
-    <label for="fecha" class="col-sm-2 control-label">Fecha</label>
+    <label for="fecha_entrega" class="col-sm-2 control-label">Fecha Entrega</label>
     <div class="col-sm-4">
       <div class="input-group date">
-        <input id="fecha" type="text" class="form-control" name="fecha" value="<?php echo date("d/m/Y", strtotime($solicitud->fecha_asignada)); ?>"/>
+        <input id="fecha_entrega" type="text" class="form-control" name="fecha_entrega" value="<?php echo date("d/m/Y", strtotime($solicitud->fecha_asignada)); ?>"/>
         <span class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span> </span> </div>
     </div>
   </div>
@@ -33,11 +33,11 @@
     </div>
     <label for="medico" class="col-sm-2 control-label">Medico</label>
     <div class="col-sm-4">
-      <select id="medico" name="medico" class="selectpicker validate[required]">
+      <select id="medico" name="medico" class="selectpicker validate[required]" data-live-search="true">
            <option disabled>Seleccione</option>
            <?php if($medicos){ ?>
            <?php foreach($medicos as $medico){ ?>
-           <option value="<?php echo $medico->codigo; ?>" <?php if($medico->codigo == $solicitud->me_codigo) echo "selected"; ?>><?php echo $medico->nombres . " " . $medico->apellidos; ?></option>
+           <option value="<?php echo $medico->codigo; ?>" <?php if($medico->codigo == $solicitud->me_codigo) echo "selected"; ?>><?php echo $medico->rut . " | " . $medico->nombres . " " . $medico->apellidos; ?></option>
            <?php } ?>
            <?php } ?>
            
