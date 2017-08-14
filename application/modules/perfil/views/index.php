@@ -6,7 +6,7 @@
     <div class="form-group">
       <label for="rut" class="col-sm-2 control-label">RUT</label>
       <div class="col-sm-10">
-        <input disabled type="text" id="rut" name="rut" class="form-control validate[required]" value="<?php echo $this->session->userdata("usuario")->rut;?>" />
+        <input type="text" id="rut" name="rut" class="form-control validate[required]" value="<?php echo $this->session->userdata("usuario")->rut;?>" />
       </div>
     </div>
     <div class="form-group">

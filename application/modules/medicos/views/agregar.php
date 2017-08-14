@@ -39,12 +39,8 @@
     </div>
     <div class="form-group">
       <label for="especialidad" class="col-sm-2 control-label">Especialidad</label>
-      <?php if(count($especialidades)>1){ ?>
-          <a href="#" id="add">Agregar +</a>
-          <?php } ?>
       <div class="col-sm-4" id="div-especialidad">
-          <select id="especialidad" name="especialidad[]" class="form-control especialidad validate[required]">
-             <option disabled selected value="">Seleccione</option>
+          <select id="especialidad" name="especialidad[]" class="selectpicker especialidad validate[required]" data-live-search="true" multiple>
              <?php if($especialidades){ ?>
              <?php foreach($especialidades as $especialidad){ ?>
                 <option value="<?php echo $especialidad->codigo; ?>"><?php echo $especialidad->nombre; ?></option>

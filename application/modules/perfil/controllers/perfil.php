@@ -13,6 +13,7 @@ class Perfil extends CI_Controller {
 		if($this->input->post()){
 
 			#validaciones
+			$this->form_validation->set_rules('rut', 'Rut', 'required');
 			$this->form_validation->set_rules('nombres', 'Nombres', 'required');
 			$this->form_validation->set_rules('apellidos', 'Apellidos', 'required');
 			$this->form_validation->set_rules('email', 'Email', 'required');
@@ -25,14 +26,31 @@ class Perfil extends CI_Controller {
 				echo json_encode(array("result"=>false,"msg"=>validation_errors()));
 				exit;
 			}
+
+			if($this->session->userdata("usuario")->rut != $this->input->post('rut')){
+				if($this->objFuncionario->obtener(array("fu_rut" => $this->input->post('rut')))){
+					echo json_encode(array("result"=>false,"msg"=>"El RUT ya existe en el sistema"));
+					exit;
+				}
+			}
+
+			if($this->session->userdata("usuario")->email != $this->input->post('email')){
+				if($this->objFuncionario->obtener(array("fu_email" => $this->input->post('email')))){
+					echo json_encode(array("result"=>false,"msg"=>"El Email ya existe en el sistema"));
+					exit;
+				}
+			}
+
+
 			$datos = array(
 				"fu_nombres" => $this->input->post('nombres'),
+				"fu_rut" => $this->input->post('rut'),
 				"fu_apellidos" => $this->input->post('apellidos'),
 				"fu_email" => $this->input->post('email')
 			);
 
-			if($this->objFuncionario->actualizar($datos,array("fu_rut"=>$this->session->userdata("usuario")->rut))){
-				$usuario = $this->objFuncionario->obtener(array("fu_rut"=>$this->session->userdata("usuario")->rut));
+			if($this->objFuncionario->actualizar($datos,array("fu_codigo"=>$this->session->userdata("usuario")->codigo))){
+				$usuario = $this->objFuncionario->obtener(array("fu_codigo"=>$this->session->userdata("usuario")->codigo));
 				$this->session->set_userdata('usuario',$usuario);
 				echo json_encode(array("result"=>true));
 				exit;

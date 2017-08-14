@@ -237,7 +237,11 @@ class Medicos extends CI_Controller {
 			$this->layout->nav(array("Médicos "=>"medicos", "Editar Médico" =>"/"));
 			$contenido["especialidades"] = $this->objEspecialidad->listar();
 			$contenido["medico_especialidades"] = $this->objRel->listar(array("me_codigo" => $codigo));
-
+			$medico_especialidades = array();
+			foreach($contenido["medico_especialidades"] as $med_esp){
+				$medico_especialidades[] = $med_esp->es_codigo;
+			}
+			$contenido["medico_especialidades"] = $medico_especialidades;
 			$this->layout->view('editar',$contenido);
 
 		}
