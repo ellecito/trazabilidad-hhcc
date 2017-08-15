@@ -10,7 +10,7 @@
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
-        <span class="navbar-brand"><img src="<?php echo base_url(); ?>imagenes/template/logo.png" width="101" height="40" /></span>
+        <span class="navbar-brand"><img src="<?php echo base_url(); ?>imagenes/template/logo2.png" width="101" height="40" /></span>
     </div>
     
     <div class="collapse navbar-collapse navbar-ex1-collapse" id="menu">

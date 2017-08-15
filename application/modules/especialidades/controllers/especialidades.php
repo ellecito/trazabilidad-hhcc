@@ -12,7 +12,7 @@ class Especialidades extends CI_Controller {
 		$this->layout->subCurrent = 7;
 	}
 
-	public function index(){
+	public function index($pagina = 1){
 		#Title
 		$this->layout->title('Especialidades');
 
@@ -42,20 +42,12 @@ class Especialidades extends CI_Controller {
 		$config['base_url'] = base_url() . 'especialidades/';
 		$config['total_rows'] = count($this->objEspecialidad->listar($where));
 		$config['per_page'] = 15;
-		$config['uri_segment'] = $segment = 3;
 		$config['suffix'] = $url;
-		$config['first_url'] = '/especialidades'.$url;
+		$config['first_url'] = base_url() . '/especialidades'.$url;
 
-		$this->pagination->initialize($config);
-		$page = ($this->uri->segment($segment))?$this->uri->segment($segment)-1:0;
-
-		$contenido['datos'] = $this->objEspecialidad->listar($where);
+		$contenido['datos'] = $this->objEspecialidad->listar($where, $pagina, $config['per_page']);
 
 		$contenido['pagination'] = $this->pagination->create_links();
-
-		#JS - pagination
-		#$this->layout->js('/js/jquery/rpage-master/responsive-paginate.js');
-		#$this->layout->js('/js/jquery/rpage-master/paginate-init.js');
 
 		#La vista siempre,  debe ir cargada al final de la función
 		$this->layout->view('index', $contenido);

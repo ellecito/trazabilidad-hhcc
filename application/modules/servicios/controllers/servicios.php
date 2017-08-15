@@ -11,7 +11,7 @@ class Servicios extends CI_Controller {
 		$this->layout->subCurrent = 12;
 	}
 
-	public function index(){
+	public function index($pagina = 1){
 		#Title
 		$this->layout->title('Servicios');
 
@@ -41,20 +41,14 @@ class Servicios extends CI_Controller {
 		$config['base_url'] = base_url() . 'servicios/';
 		$config['total_rows'] = count($this->objServicio->listar($where));
 		$config['per_page'] = 15;
-		$config['uri_segment'] = $segment = 3;
 		$config['suffix'] = $url;
-		$config['first_url'] = '/servicios'.$url;
+		$config['first_url'] = base_url() . '/servicios'.$url;
 
 		$this->pagination->initialize($config);
-		$page = ($this->uri->segment($segment))?$this->uri->segment($segment)-1:0;
 
-		$contenido['datos'] = $this->objServicio->listar($where);
+		$contenido['datos'] = $this->objServicio->listar($where, $pagina, $config['per_page']);
 
 		$contenido['pagination'] = $this->pagination->create_links();
-
-		#JS - pagination
-		#$this->layout->js('/js/jquery/rpage-master/responsive-paginate.js');
-		#$this->layout->js('/js/jquery/rpage-master/paginate-init.js');
 
 		#La vista siempre,  debe ir cargada al final de la función
 		$this->layout->view('index', $contenido);

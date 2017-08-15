@@ -45,7 +45,17 @@ class Modelo_anaqueles extends CI_Model {
         }
 	}
 	
-	public function listar($where = false){
+	public function listar($where = false, $pagina = false, $cantidad = false){
+
+		if($pagina && $cantidad){
+			$desde = ($pagina - 1) * $cantidad;
+			$this->db->limit($cantidad, $desde);
+		}
+
+		if($cantidad){
+			$this->db->limit($cantidad);
+		}
+		
 		if($where) $this->db->where($where);
 		$sql = $this->db->select('*')
 				->from($this->tabla)

@@ -11,7 +11,7 @@ class Pacientes extends CI_Controller {
 		$this->layout->subCurrent = 1;
 	}
 
-	public function index(){
+	public function index($pagina = 1){
 		#Title
 		$this->layout->title('Pacientes');
 
@@ -41,20 +41,14 @@ class Pacientes extends CI_Controller {
 		$config['base_url'] = base_url() . 'pacientes/';
 		$config['total_rows'] = count($this->objPaciente->listar($where));
 		$config['per_page'] = 15;
-		$config['uri_segment'] = $segment = 3;
 		$config['suffix'] = $url;
-		$config['first_url'] = '/pacientes'.$url;
+		$config['first_url'] = base_url() . '/pacientes'.$url;
 
 		$this->pagination->initialize($config);
-		$page = ($this->uri->segment($segment))?$this->uri->segment($segment)-1:0;
 
-		$contenido['datos'] = $this->objPaciente->listar($where);
+		$contenido['datos'] = $this->objPaciente->listar($where, $pagina, $config['per_page']);
 
 		$contenido['pagination'] = $this->pagination->create_links();
-
-		#JS - pagination
-		#$this->layout->js('/js/jquery/rpage-master/responsive-paginate.js');
-		#$this->layout->js('/js/jquery/rpage-master/paginate-init.js');
 
 		#La vista siempre,  debe ir cargada al final de la función
 		$this->layout->view('index', $contenido);

@@ -28,8 +28,11 @@ $config['num_tag_open'] = '<li class="page-away-1" style="display: inline;">';
 $config['num_tag_close'] = '</li>';
 
 #ultimo
-$config['last_link'] = '&gt&gt;';
+$config['last_link'] = '';
+//$config['last_link'] = '&gt&gt;';
 $config['suffix'] = '/';
 $config['use_page_numbers'] = TRUE;
+
+$config['uri_segment'] = 2;
 
 /* fin archivo pagination.php */

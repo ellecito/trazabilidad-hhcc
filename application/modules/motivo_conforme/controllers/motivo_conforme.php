@@ -11,7 +11,7 @@ class Motivo_conforme extends CI_Controller {
 		$this->layout->subCurrent = 13;
 	}
 
-	public function index(){
+	public function index($pagina = 1){
 		#Title
 		$this->layout->title('Motivo Conforme');
 
@@ -41,20 +41,14 @@ class Motivo_conforme extends CI_Controller {
 		$config['batc_url'] = base_url() . 'motivo_conforme/';
 		$config['total_rows'] = count($this->objMotivo->listar($where));
 		$config['per_page'] = 15;
-		$config['uri_segment'] = $segment = 3;
 		$config['suffix'] = $url;
-		$config['first_url'] = '/motivo_conforme'.$url;
+		$config['first_url'] = base_url() . '/motivo_conforme'.$url;
 
 		$this->pagination->initialize($config);
-		$page = ($this->uri->segment($segment))?$this->uri->segment($segment)-1:0;
 
-		$contenido['datos'] = $this->objMotivo->listar($where);
+		$contenido['datos'] = $this->objMotivo->listar($where, $pagina, $config['per_page']);
 
 		$contenido['pagination'] = $this->pagination->create_links();
-
-		#JS - pagination
-		#$this->layout->js('/js/jquery/rpage-master/responsive-paginate.js');
-		#$this->layout->js('/js/jquery/rpage-master/paginate-init.js');
 
 		#La vista siempre,  debe ir cargada al final de la función
 		$this->layout->view('index', $contenido);

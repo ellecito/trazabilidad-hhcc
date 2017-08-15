@@ -11,7 +11,7 @@ class Motivo_solicitudes extends CI_Controller {
 		$this->layout->subCurrent = 9;
 	}
 
-	public function index(){
+	public function index($pagina = 1){
 		#Title
 		$this->layout->title('Motivo Solicitudes');
 
@@ -41,14 +41,12 @@ class Motivo_solicitudes extends CI_Controller {
 		$config['base_url'] = base_url() . 'motivo-solicitudes/';
 		$config['total_rows'] = count($this->objMotivo->listar($where));
 		$config['per_page'] = 15;
-		$config['uri_segment'] = $segment = 3;
 		$config['suffix'] = $url;
-		$config['first_url'] = '/motivo-solicitudes'.$url;
+		$config['first_url'] = base_url() . '/motivo-solicitudes'.$url;
 
 		$this->pagination->initialize($config);
-		$page = ($this->uri->segment($segment))?$this->uri->segment($segment)-1:0;
 
-		$contenido['datos'] = $this->objMotivo->listar($where);
+		$contenido['datos'] = $this->objMotivo->listar($where, $pagina, $config['per_page']);
 
 		$contenido['pagination'] = $this->pagination->create_links();
 
