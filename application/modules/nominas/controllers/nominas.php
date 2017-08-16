@@ -13,6 +13,11 @@ class Nominas extends CI_Controller {
 		$this->load->model("medicos/modelo_medicos", "objMedico");
 		$this->load->model("box/modelo_box", "objBox");
 		$this->load->model("especialidades/modelo_especialidad", "objEspecialidad");
+		$this->load->model("servicios/modelo_servicios", "objServicio");
+		$this->load->model("unidades/modelo_unidades", "objUnidad");
+		$this->load->model("inicio/modelo_funcionarios", "objFuncionario");
+		$this->load->model("divisiones/modelo_divisiones", "objDivision");
+		$this->load->model("bodegas/modelo_bodegas", "objBodega");
 		$this->layout->current = 4;
 	}
 
@@ -62,6 +67,8 @@ class Nominas extends CI_Controller {
 			$where_fecha = "ag_hora_agendada >= '" . date("Y-m-d", strtotime(str_replace("/", "-", $params["fecha"]))) . " 00:00:00'";
 			//Armado de nominas
 			$nominas = array();
+			$vouchers = array();
+			$hhcc = array();
 			foreach($this->objMedico->listar($where_medico) as $medico){
 				//Calculo de nomina por medico
 				foreach($this->objRelE->listar($where_especialidades . " AND me_codigo =" . $medico->codigo) as $especialidad){
@@ -71,9 +78,11 @@ class Nominas extends CI_Controller {
 						$nomina->codigo = $this->objNominas->getLastId();
 						$nomina->medico = $medico;
 						$nomina->medico->especialidad = $this->objEspecialidad->obtener(array("es_codigo" => $especialidad->es_codigo));
+						$nomina->medico->servicio = $this->objServicio->obtener(array("se_codigo" => $nomina->medico->especialidad->se_codigo));
+						$nomina->ubicacion = $this->objUnidad->obtener(array("un_codigo" => $nomina->medico->servicio->un_codigo));
 						$nomina->agendas = $agendas;
 						$nomina->fecha_creacion = date("Y-m-d H:i:s");
-						$nomina->fecha_asignacion = date("Y-m-d H:i:s", strtotime("+1 day"));
+						$nomina->fecha_asignacion = date("Y-m-d", strtotime(str_replace("/", "-", $params["fecha"]))) . " 08:00:00";
 
 						//Insertar en la BD
 						$datos = array(
@@ -88,18 +97,22 @@ class Nominas extends CI_Controller {
 						//Relacion Nomina-Agenda
 						$pacientes = array();
 						$boxs = array();
+						$hora_asignacion = strtotime("08:00:00");
 						foreach($nomina->agendas as $agenda){
 							$rel = array(
 								"no_codigo" => $datos["no_codigo"],
 								"ag_codigo" => $agenda->codigo
 							);
-
+							$hora_agendada = strtotime(substr($agenda->hora_agendada, 10, 6));
+							if($hora_agendada < $hora_asignacion) $hora_asignacion = $hora_agendada;
+							$nomina->fecha_asignacion = date("Y-m-d", strtotime(str_replace("/", "-", $params["fecha"]))) . " " . date("H:i:s", $hora_asignacion);
 							$this->objRel->insertar($rel);
 							$paciente = $this->objPaciente->obtener(array("pa_codigo" => $agenda->pa_codigo));
 							$paciente->box = $this->objBox->obtener(array("bx_codigo" => $agenda->bx_codigo));
 							$pacientes[] = $paciente;
+							$hhcc[] = $paciente->hhcc;
 						}
-
+						
 						$nomina->pacientes = $pacientes;
 						$nominas[] = $nomina;
 					}
@@ -107,12 +120,28 @@ class Nominas extends CI_Controller {
 				}
 				
 			}
-
+			//Vouchers
+			asort($hhcc);
+			$divisiones = $this->objDivision->listar();
+			foreach($divisiones as $division){
+				$voucher = new stdClass();
+				$voucher->division = $division;
+				$voucher->bodega = $this->objBodega->obtener(array("bo_codigo" => $division->anaquel->bo_codigo));
+				$voucher->hhcc = array();
+					foreach($hhcc as $hc){
+						if($hc>=$division->rango_min and $hc<=$division->rango_max){
+							$voucher->hhcc[] = $hc;
+						}
+					}
+				$voucher->funcionario = $this->objFuncionario->obtener(array("fu_codigo" => $division->fu_codigo));
+				if($voucher->hhcc) $vouchers[] = $voucher;
+			}
 			$endtime = microtime(true);
 
 			$contenido = array(
 				"timediff" => $endtime - $starttime,
-				"nominas" => $nominas
+				"nominas" => $nominas,
+				"vouchers" => $vouchers
 			);
 
 			$this->layout->view('nominas', $contenido);

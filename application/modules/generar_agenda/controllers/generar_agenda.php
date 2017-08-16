@@ -28,17 +28,21 @@ class Generar_agenda extends CI_Controller {
 		$boxs = $this->objBox->listar();
 		$especialidades = $this->objEspecialidad->listar();
 
+		$hora = "08:00:00";
+
 		for ($i=0; $i < 100 ; $i++) {
 			$datos = array(
 				"ag_codigo" => $this->objAgenda->getLastId(),
 				"ag_hora_pedido" => date("Y-m-d H:i:s"),
-				"ag_hora_agendada" => date("Y-m-d H:i:s", strtotime("+1 day")),
+				"ag_hora_agendada" => date("Y-m-d", strtotime("+1 day")) . " " . $hora,
 				"pa_codigo" => $pacientes[array_rand($pacientes, 1)]->codigo,
 				"me_codigo" => $medicos[array_rand($medicos, 1)]->codigo,
 				"bx_codigo" => $boxs[array_rand($boxs, 1)]->codigo,
 				"es_codigo" => $especialidades[array_rand($especialidades, 1)]->codigo
 			);
 			$this->objAgenda->insertar($datos);
+			$hora = date("H:i:s", strtotime($hora) + 1800);
+			if($hora > date("H:i:s", strtotime("20:00:00"))) $hora = "08:00:00";
 		}
 
 		$endtime = microtime(true);

@@ -124,9 +124,9 @@ class Generar extends CI_Controller {
 			$funcionario = array(
 				"fu_codigo" => $this->objFuncionario->getLastId(),
 				"fu_rut" => rand(1,30) . "." . rand(100,999) . "." . rand(100,999) . "-" . rand(1,9),
-				"fu_nombres" => md5(rand()),
-				"fu_apellidos" => md5(rand()),
-				"fu_email" => md5(rand()) . "@" . "prueba.cl",
+				"fu_nombres" => "FUNCIONARIO DE",
+				"fu_apellidos" => "PRUEBA " . $i,
+				"fu_email" => "prueba" . $i . "@prueba.cl",
 				"fu_password" => md5(rand()),
 				"fu_estado" => 1,
 				"ti_codigo" => 1
@@ -142,8 +142,8 @@ class Generar extends CI_Controller {
 			$paciente = array(
 				"pa_codigo" => $this->objPaciente->getLastId(),
 				"pa_rut" => rand(1,30) . "." . rand(100,999) . "." . rand(100,999) . "-" . rand(1,9),
-				"pa_nombres" => md5(rand()),
-				"pa_apellidos" => md5(rand()),
+				"pa_nombres" => "PACIENTE DE",
+				"pa_apellidos" => "PRUEBA " . $i,
 				"pa_estado" => 1,
 				"pa_hhcc" => $i
 			);
@@ -159,10 +159,10 @@ class Generar extends CI_Controller {
 			$medico = array(
 				"me_codigo" => $this->objMedico->getLastId(),
 				"me_rut" => rand(1,30) . "." . rand(100,999) . "." . rand(100,999) . "-" . rand(1,9),
-				"me_nombres" => md5(rand()),
-				"me_apellidos" => md5(rand()),
+				"me_nombres" => "MEDICO DE",
+				"me_apellidos" => "PRUEBA " . $i,
 				"me_estado" => 1,
-				"me_email" => md5(rand()) . "@" . "prueba.cl"
+				"me_email" => "prueba" . $i . "@prueba.cl"
 			);
 			$this->objMedico->insertar($medico);
 			$cantidad_esp = rand(1,2);
