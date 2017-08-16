@@ -28,3 +28,16 @@
     </div>
   </div>
 </form>
+
+<form class="form-horizontal" id="form-importar" method="POST" enctype="multipart/form-data">
+  <a href="ejemplo">Descargar ejemplo</a>
+  <div class="form-group">
+    <label for="archivo" class="col-sm-2 control-label">Importar Excel</label>
+    <div class="col-sm-8">
+      <input id="archivo" type="file" class="nicefileinput nice" name="archivo" accept=".xls,.xlsx"/>
+    </div>
+    <div class="text-box">
+      <button type="submit" class="btn btn-primary btn-lg">Subir</button>
+    </div>
+  </div>
+</form>
