@@ -1,23 +1,19 @@
 <?php
-class Modelo_solicitud extends CI_Model {
+class Modelo_solicitud_paciente extends CI_Model {
 	private $tabla;
 	private $prefijo;
 	
 	function __construct(){
-		$this->tabla = "solicitud";
+		$this->tabla = "solicitud_paciente";
 		$this->prefijo = substr($this->tabla, 0, 2) . "_";
-		$this->load->model("medicos/modelo_medicos", "objMedicos");
-		$this->load->model("modelo_motivo_solicitud", "objMotivo");
-		$this->load->model("pacientes/modelo_pacientes", "objPaciente");
-		$this->load->model("inicio/modelo_funcionarios", "objFuncionario");
 		parent::__construct();
 	}
 	
-	public function getLastId(){
+	/*public function getLastId(){
 		$this->db->select_max("{$this->prefijo}codigo","maximo");
 		$sql = $this->db->get($this->tabla);
 		return $sql->row()->maximo+1;
-	}
+	}*/
 	
 	public function insertar($datos){
 		return $this->db->insert($this->tabla, $datos);
@@ -26,6 +22,11 @@ class Modelo_solicitud extends CI_Model {
 	public function actualizar($datos, $where){
 		$this->db->where($where);
 		return $this->db->update($this->tabla, $datos);
+	}
+
+	public function eliminar($where){
+		$this->db->where($where);
+		return $this->db->delete($this->tabla);
 	}
 	
 	public function obtener($where){
@@ -42,27 +43,13 @@ class Modelo_solicitud extends CI_Model {
 			foreach(get_object_vars($resultado) as $key => $val){
 				$obj->{str_replace($this->prefijo, "", $key)} = $resultado->{$key};
 			}
-			$obj->medico = $this->objMedicos->obtener(array("me_codigo" => $obj->me_codigo));
-			$obj->motivo = $this->objMotivo->obtener(array("mo_codigo" => $obj->mo_codigo));
-			$obj->funcionario = $this->objFuncionario->obtener(array("fu_codigo" => $obj->fu_codigo));
-			unset($obj->me_codigo); unset($obj->mo_codigo); unset($obj->fu_codigo);
 			return $obj;
         }else{
 			return false;
         }
 	}
 	
-	public function listar($where = false, $pagina = false, $cantidad = false){
-
-		if($pagina && $cantidad){
-			$desde = ($pagina - 1) * $cantidad;
-			$this->db->limit($cantidad, $desde);
-		}
-
-		if($cantidad){
-			$this->db->limit($cantidad);
-		}
-		
+	public function listar($where = false){
 		if($where) $this->db->where($where);
 		$sql = $this->db->select('*')
 				->from($this->tabla)
@@ -76,9 +63,6 @@ class Modelo_solicitud extends CI_Model {
 				foreach(get_object_vars($resultado) as $key => $val){
 					$obj->{str_replace($this->prefijo, "", $key)} = $resultado->{$key};
 				}
-				$obj->medico = $this->objMedicos->obtener(array("me_codigo" => $obj->me_codigo));
-				$obj->motivo = $this->objMotivo->obtener(array("mo_codigo" => $obj->mo_codigo));
-				unset($obj->me_codigo); unset($obj->mo_codigo);
 				$listado[] = $obj;
 			}
 			return $listado;

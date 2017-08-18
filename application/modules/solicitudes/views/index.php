@@ -23,9 +23,8 @@
       <tr>
         <th scope="col">Código</th>
         <th scope="col">Fecha Emision</th>
-        <th scope="col">Fecha Asignada</th>
-        <th scope="col">Fecha Entrega</th>
-        <th scope="col">Paciente</th>
+        <th scope="col">Fecha Solicitud</th>
+        <th scope="col">Fecha Devolución</th>
         <th scope="col">Medico</th>
         <th scope="col">Motivo</th>
         <th scope="col" style="width:90px;">&nbsp;</th>
@@ -39,13 +38,15 @@
 					<td><?php echo formatearFecha(substr($solicitud->fecha_emision, 0, 10));?></td>
           <td><?php echo formatearFecha(substr($solicitud->fecha_asignada, 0, 10));?></td>
           <td><?php echo formatearFecha(substr($solicitud->fecha_entrega, 0, 10));?></td>
-          <td><?php echo $solicitud->paciente->rut . " | " . $solicitud->paciente->nombres . " " . $solicitud->paciente->apellidos; ?></td>
-          <td><?php echo $solicitud->medico->rut . " | " . $solicitud->medico->nombres . " " . $solicitud->medico->apellidos; ?></td>
+          <td><?php if($solicitud->medico) echo $solicitud->medico->rut . " | " . $solicitud->medico->nombres . " " . $solicitud->medico->apellidos; if(!$solicitud->medico) echo "Externo: " . $solicitud->nombre_medico; ?></td>
           <td><?php echo $solicitud->motivo->nombre; ?></td>
 					<td class="editar">
 						<a href="<?php echo base_url(); ?>solicitudes/editar/<?php echo $solicitud->codigo; ?>">
 							<button title="Editar" type="button" class="btn btn-success btn-sm"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
 						</a>
+            <a href="<?php echo base_url(); ?>solicitudes/descargar/<?php echo $solicitud->codigo; ?>">
+              <button title="Descargar" type="button" class="btn btn-success btn-sm"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></button>
+            </a>
 					</td>
 				</tr>
 			<?php endforeach;?>

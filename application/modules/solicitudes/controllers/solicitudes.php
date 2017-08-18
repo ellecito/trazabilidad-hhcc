@@ -10,6 +10,10 @@ class Solicitudes extends CI_Controller {
 		$this->load->model("medicos/modelo_medicos", "objMedicos");
 		$this->load->model("modelo_motivo_solicitud", "objMotivo");
 		$this->load->model("modelo_solicitud", "objSolicitud");
+		$this->load->model("modelo_solicitud_paciente", "objSolicitudPaciente");
+		$this->load->model("especialidades/modelo_especialidad", "objEspecialidad");
+		$this->load->model("servicios/modelo_servicios", "objServicio");
+		$this->load->model("medicos/modelo_medicos_especialidades", "objRel");
 		$this->layout->current = 2;
 		$this->layout->subCurrent = 8;
 	}
@@ -63,7 +67,7 @@ class Solicitudes extends CI_Controller {
 
 			#validaciones
 			$this->form_validation->set_rules('fecha_entrega', 'Fecha Entrega', 'required');
-			$this->form_validation->set_rules('fecha_retorno', 'Fecha Retorno', 'required');
+			//$this->form_validation->set_rules('fecha_retorno', 'Fecha Retorno', 'required');
 			$this->form_validation->set_rules('paciente', 'Paciente', 'required');
 			$this->form_validation->set_rules('medico', 'Medico', 'required');
 			$this->form_validation->set_rules('motivo', 'Motivo', 'required');
@@ -76,20 +80,29 @@ class Solicitudes extends CI_Controller {
 				echo json_encode(array("result"=>false,"msg"=>validation_errors()));
 				exit;
 			}
-			
+			//'so_fecha_entrega' => date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_retorno')))),
 			$datos = array(
 				'so_codigo' => $this->objSolicitud->getLastId(),
 				'so_fecha_emision' => date("Y-m-d H:i:s"),
 				'so_fecha_asignada' => date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_entrega')))),
-				'so_fecha_entrega' => date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_retorno')))),
+				'so_fecha_entrega' => date("Y-m-d"),
 				'fu_codigo' => $this->session->userdata("usuario")->codigo,
 				'me_codigo' => $this->input->post('medico'),
-				'pa_codigo' => $this->input->post('paciente'),
 				'mo_codigo' => $this->input->post('motivo'),
-				'so_detalle' => $this->input->post('detalle')
+				'so_detalle' => $this->input->post('detalle'),
+				'so_nombre_medico' => $this->input->post('nombre'),
+				'so_email_medico' => $this->input->post('email'),
+				'so_telefono_medico' => $this->input->post('telefono')
 			);
 			
 			if($this->objSolicitud->insertar($datos)){
+				foreach($this->input->post('paciente') as $paciente){
+					$rel = array(
+						"so_codigo" => $datos["so_codigo"],
+						"pa_codigo" => $paciente
+					);
+					$this->objSolicitudPaciente->insertar($rel);
+				}
 				echo json_encode(array("result"=>true));
 				exit;
 			}else{
@@ -138,7 +151,7 @@ class Solicitudes extends CI_Controller {
 
 			#validaciones
 			$this->form_validation->set_rules('fecha_entrega', 'Fecha Entrega', 'required');
-			$this->form_validation->set_rules('fecha_retorno', 'Fecha Retorno', 'required');
+			//$this->form_validation->set_rules('fecha_retorno', 'Fecha Retorno', 'required');
 			$this->form_validation->set_rules('paciente', 'Paciente', 'required');
 			$this->form_validation->set_rules('medico', 'Medico', 'required');
 			$this->form_validation->set_rules('motivo', 'Motivo', 'required');
@@ -154,15 +167,25 @@ class Solicitudes extends CI_Controller {
 
 			$datos = array(
 				'so_fecha_asignada' => date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_entrega')))),
-				'so_fecha_entrega' => date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_retorno')))),
+				'so_fecha_entrega' => date("Y-m-d"),
 				'fu_codigo' => $this->session->userdata("usuario")->codigo,
 				'me_codigo' => $this->input->post('medico'),
-				'pa_codigo' => $this->input->post('paciente'),
 				'mo_codigo' => $this->input->post('motivo'),
-				'so_detalle' => $this->input->post('detalle')
+				'so_detalle' => $this->input->post('detalle'),
+				'so_nombre_medico' => $this->input->post('nombre'),
+				'so_email_medico' => $this->input->post('email'),
+				'so_telefono_medico' => $this->input->post('telefono')
 			);
 
 			if($this->objSolicitud->actualizar($datos,array("so_codigo"=>$this->input->post('codigo')))){
+				$this->objSolicitudPaciente->eliminar(array("so_codigo" => $this->input->post('codigo')));
+				foreach($this->input->post('paciente') as $paciente){
+					$rel = array(
+						"so_codigo" => $this->input->post('codigo'),
+						"pa_codigo" => $paciente
+					);
+					$this->objSolicitudPaciente->insertar($rel);
+				}
 				echo json_encode(array("result"=>true));
 				exit;
 			}else{
@@ -198,9 +221,13 @@ class Solicitudes extends CI_Controller {
 				"medicos" => $this->objMedicos->listar(),
 				"funcionarios" => $this->objFuncionario->listar(),
 				"motivos" => $this->objMotivo->listar(),
-				"objSolicitud" => $this->objMotivo->listar()
+				"solicitud_pacientes" => $this->objSolicitudPaciente->listar(array("so_codigo" => $codigo))
 			);
-
+			$solicitud_pacientes = array();
+			foreach($contenido["solicitud_pacientes"] as $sol_pac){
+				$solicitud_pacientes[] = $sol_pac->pa_codigo;
+			}
+			$contenido["solicitud_pacientes"] = $solicitud_pacientes;
 			#contenido
 			if($contenido['solicitud']){
 
@@ -211,6 +238,82 @@ class Solicitudes extends CI_Controller {
 			$this->layout->view('editar',$contenido);
 
 		}
+	}
+
+	public function descargar($codigo = false){
+		if(!$codigo) redirect(base_url());
+
+		$solicitud = $this->objSolicitud->obtener(array("so_codigo" => $codigo));
+		$solicitud->pacientes = $this->objSolicitudPaciente->listar(array("so_codigo" => $codigo));
+		$solicitud_pacientes = array();
+		foreach($solicitud->pacientes as $sol_pac){
+			$solicitud_pacientes[] = $this->objPaciente->obtener(array("pa_codigo" => $sol_pac->pa_codigo));
+		}
+		$solicitud->pacientes = $solicitud_pacientes;
+		$html = "<div style='padding: 20px;'>";
+		$html.= "<img src='" . base_url() . "imagenes/template/minsal.png' style='width: 10%;'/>";
+		$html.= "<h3 style='text-align: center;'>SOLICITUD DE HISTORIAS CLINICAS</h3>";
+
+		if($solicitud->medico){
+			$solicitud->medico->especialidad = $this->objRel->obtener(array("me_codigo" => $solicitud->medico->codigo));
+			$solicitud->medico->especialidad = $this->objEspecialidad->obtener(array("es_codigo" => $solicitud->medico->especialidad->es_codigo));
+			$solicitud->medico->servicio = $this->objServicio->obtener(array("se_codigo" => $solicitud->medico->especialidad->se_codigo));
+			$html.= "<p><b>PROFESIONAL:</b> " . $solicitud->medico->nombres . " " . $solicitud->medico->apellidos . "</p>";
+			$html.= "<p><b>ESPECIALIDAD:</b> " . $solicitud->medico->especialidad->nombre . "</p>";
+			$html.= "<p><b>SERVICIO:</b> " . $solicitud->medico->servicio->nombre . "</p>";
+		}else{
+			$html.= "<p><b>PROFESIONAL EXTERNO:</b> " . $solicitud->nombre_medico . "</p>";
+			$html.= "<p><b>TELEFONO:</b> " . $solicitud->telefono_medico . "</p>";
+			$html.= "<p><b>EMAIL:</b> " . $solicitud->email_medico . "</p>";
+		}
+
+		$html.= "<p><b>FECHA EMISION:</b> " . $solicitud->fecha_emision . "</p>";
+		$html.= "<p><b>FECHA SOLICITUD:</b> " . $solicitud->fecha_asignada . "</p>";
+		$html.= "<p><b>FECHA ENTREGA:</b> " . $solicitud->fecha_entrega . "</p>";
+		$html.= "<p><b>DETALLES:</b> " . $solicitud->detalle . "</p>";
+		
+		
+		$html.= "<p><b>LUGAR FISICO HHCC:</b> POR DEFINIR (TRAZABILIDAD)</p>";
+		$html.= "<p><b>MOTIVO:</b> " . $solicitud->motivo->nombre . "</p>";
+
+
+		$html.="<p><b>PACIENTES:</b> </p>";
+		$html.="<table style='width: 100%;'>";
+		$html.="<tr>";
+		$html.="<td>HHCC</td>";
+		$html.="<td>RUT</td>";
+		$html.="<td>NOMBRE</td>";
+		$html.="</tr>";
+		$html.= "/<div>";
+		foreach($solicitud->pacientes as $paciente){
+			$html.="<tr>";
+			$html.="<td>" . $paciente->hhcc . "</td>";
+			$html.="<td>" . $paciente->rut . "</td>";
+			$html.="<td>" . $paciente->nombres . " " . $paciente->apellidos . "</td>";
+			$html.="</tr>";
+		}
+		$html.="</table>";
+		$rutaPdf = "/hospital/archivos/";
+		if(!file_exists($_SERVER['DOCUMENT_ROOT'].$rutaPdf))
+			mkdir($_SERVER['DOCUMENT_ROOT'].$rutaPdf, 0777);
+		$rutaPdf .= "pdf/";
+		if(!file_exists($_SERVER['DOCUMENT_ROOT'].$rutaPdf))
+			mkdir($_SERVER['DOCUMENT_ROOT'].$rutaPdf, 0777);
+			
+		$nombrePdf = "pdf".time().'.pdf';	 	 
+		require APPPATH."/libraries/mpdf/mpdf.php";
+		$mpdf->use_embeddedfonts_1252 = true; // false is default
+			
+		ob_start();
+		$mpdf=new mPDF('utf-8','','','',0,0,0,0,6,3); 
+		$mpdf->SetDisplayMode('fullpage');
+		$mpdf->SetTitle('Solicitudes');
+		$mpdf->SetAuthor('HOSPITAL CHILLAN');
+		$mpdf->WriteHTML(file_get_contents(APPPATH . "/css/bootstrap.css"), 1);
+		$mpdf->WriteHTML($html, 2);
+		$mpdf->Output($_SERVER['DOCUMENT_ROOT'].$rutaPdf.$nombrePdf,'F');
+		redirect($rutaPdf.$nombrePdf);
+		//echo $html;
 	}
 	
 }

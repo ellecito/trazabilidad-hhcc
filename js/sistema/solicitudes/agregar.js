@@ -52,5 +52,14 @@ $(function(){
    });
 
    $("#fecha_entrega").datepicker();
-   $("#fecha_retorno").datepicker();
+   //$("#fecha_retorno").datepicker();
+   $('#medico').change(function(){
+      if($(this).val() == 0){
+        $("#hide_medico1").css("display", "block");
+        $("#hide_medico2").css("display", "block");
+      }else{
+        $("#hide_medico1").css("display", "none");
+        $("#hide_medico2").css("display", "none");
+      }
+   });
 });
