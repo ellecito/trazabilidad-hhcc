@@ -120,8 +120,8 @@
 
       return arr;
     },
-    selectAllText: 'Select All',
-    deselectAllText: 'Deselect All',
+    selectAllText: 'Todos',
+    deselectAllText: 'Ninguno',
     multipleSeparator: ', ',
     style: 'btn-default',
     size: 'auto',

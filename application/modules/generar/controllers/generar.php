@@ -32,6 +32,7 @@ class Generar extends CI_Controller {
 
 		$logs = array();
 		$logs[] = $this->base();
+		$logs[] = $this->unidades();
 		$logs[] = $this->servicios();
 		$logs[] = $this->especialidades();
 		$logs[] = $this->pacientes();
@@ -40,7 +41,6 @@ class Generar extends CI_Controller {
 		$logs[] = $this->anaqueles();
 		$logs[] = $this->funcionarios();
 		$logs[] = $this->divisiones();
-		$logs[] = $this->unidades();
 		$logs[] = $this->boxs();
 		$this->layout->view('index', array("logs" => $logs));
 	}
@@ -152,7 +152,7 @@ class Generar extends CI_Controller {
 		return "Se generaron " . $cantidad . " pacientes";
 	}
 
-	private function medicos($cantidad = 200){
+	private function medicos($cantidad = 10){
 		$especialidades = $this->objEspecialidad->listar();
 		$k = 0;
 		for($i = 1; $i<=$cantidad; $i++){
@@ -185,10 +185,12 @@ class Generar extends CI_Controller {
 	}
 
 	private function servicios($cantidad = 20){
+		$unidades = $this->objUnidad->listar();
 		for($i = 1; $i<=$cantidad; $i++){
 			$servicio = array(
 				"se_codigo" => $this->objServicio->getLastId(),
-				"se_nombre" => "Servicio " . $i
+				"se_nombre" => "Servicio " . $i,
+				"un_codigo" => $unidades[array_rand($unidades,1)]->codigo
 			);
 			$this->objServicio->insertar($servicio);
 		}

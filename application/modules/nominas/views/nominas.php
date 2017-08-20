@@ -1,6 +1,7 @@
 <div class="page-header">
   <h1>Nominas</h1>
 </div>
+<a href="<?php echo $pdf; ?>">Imprimir Nominas</a> | <a href="<?php echo $pdf_voucher; ?>">Imprimir Vouchers</a><br/>
 Script se demoro <?php echo round($timediff); ?> segundos.
 <?php foreach($nominas as $nomina){ ?>
 <center><h3>NOMINA HHCC</h3></center>
@@ -60,21 +61,39 @@ Script se demoro <?php echo round($timediff); ?> segundos.
 		<td><?php echo $paciente->nombres . " " . $paciente->apellidos; ?></td>
 		<td></td>
 		<td>LUGAR USO</td>
-		<td>HOR. DEV.</td>
+		<td><?php echo $paciente->hora; ?></td>
 		<td>ULTIMA UBICACION</td>
 		<td></td>
 	</tr>
 	<?php } ?>
 </table>
 <?php } ?>
+
 <div class="page-header">
   <h1>Vouchers</h1>
 </div>
 <?php foreach($vouchers as $voucher){ ?>
-<h3>FUNCIONARIO: <?php echo $voucher->funcionario->nombres . " " .  $voucher->funcionario->apellidos; ?></h3>
-<h5>DIVISION: <?php echo $voucher->division->nombre . " | " . $voucher->division->anaquel->nombre . " | " . $voucher->bodega->nombre; ?></h5>
-<h5>HHCC</h5>
-<?php foreach($voucher->hhcc as $hhcc){ ?>
-	<p><?php echo $hhcc; ?></p>
-<?php } ?>
+<center><h3>VOUCHER</h3></center>
+<table style="width: 100%;">
+	<tr>
+		<td><b>FUNCIONARIO:</b> </td>
+		<td><?php echo $voucher->funcionario->nombres . " " .  $voucher->funcionario->apellidos; ?></td>
+		<td><b>UBICACION:</b></td>
+		<td><?php echo $voucher->division->nombre . " | " . $voucher->division->anaquel->nombre . " | " . $voucher->bodega->nombre; ?></td>
+	</tr>
+	<tr style="border-top: 1px solid black; border-bottom: 1px solid black;">
+		<td><b>HHCC<b></td>
+		<td><b>MEDICO<b></td>
+		<td><b>ESPECIALIDAD<b></td>
+		<td><b>NOMINA</b></td>
+	</tr>
+	<?php foreach($voucher->hhcc as $hhcc){ ?>
+	<tr>
+		<td><?php echo $hhcc->hhcc; ?></td>
+		<td><?php echo $hhcc->medico->nombres . " " . $hhcc->medico->apellidos; ?></td>
+		<td><?php echo $hhcc->medico->especialidad->nombre; ?></td>
+		<td><?php echo $hhcc->nomina; ?></td>
+	</tr>
+	<?php } ?>
+</table>
 <?php } ?>

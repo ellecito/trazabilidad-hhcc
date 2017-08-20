@@ -12,7 +12,7 @@
     </div>
     <label for="medicos" class="col-sm-2 control-label">Medicos</label>
     <div class="col-sm-4">
-      <select id="medicos" name="medicos[]" class="selectpicker validate[required]" multiple data-live-search="true">
+      <select id="medicos" name="medicos[]" class="selectpicker validate[required]" multiple data-live-search="true" data-actions-box="true">
            <?php if($medicos){ ?>
            <?php foreach($medicos as $medico){ ?>
            <option value="<?php echo $medico->codigo; ?>" selected><?php echo $medico->nombres . " " . $medico->apellidos; ?></option>
@@ -25,7 +25,7 @@
   <div class="form-group">
     <label for="boxs" class="col-sm-2 control-label">Boxs</label>
     <div class="col-sm-4">
-      	<select id="boxs" name="boxs[]" class="selectpicker validate[required]" multiple data-live-search="true">
+      	<select id="boxs" name="boxs[]" class="selectpicker validate[required]" multiple data-live-search="true" data-actions-box="true">
            <?php if($boxs){ ?>
            <?php foreach($boxs as $box){ ?>
            <option value="<?php echo $box->codigo; ?>" selected><?php echo $box->nombre; ?></option>
@@ -35,7 +35,7 @@
     </div>
     <label for="especialidades" class="col-sm-2 control-label">Especialidades</label>
     <div class="col-sm-4">
-    	<select id="especialidades" name="especialidades[]" class="selectpicker validate[required]" multiple data-live-search="true">
+    	<select id="especialidades" name="especialidades[]" class="selectpicker validate[required]" multiple data-live-search="true" data-actions-box="true">
            <?php if($especialidades){ ?>
            <?php foreach($especialidades as $especialidad){ ?>
            <option value="<?php echo $especialidad->codigo; ?>" selected><?php echo $especialidad->nombre; ?></option>
@@ -45,6 +45,19 @@
     </div>
     <div class="text-box">
       <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
+    </div>
+  </div>
+</form>
+
+<form class="form-horizontal" id="form-importar" method="POST" enctype="multipart/form-data">
+  <a href="ejemplo">Descargar ejemplo</a>
+  <div class="form-group">
+    <label for="archivo" class="col-sm-2 control-label">Importar Traza</label>
+    <div class="col-sm-8">
+      <input id="archivo" type="file" class="nicefileinput nice" name="archivo" accept=".xls,.xlsx"/>
+    </div>
+    <div class="text-box">
+      <button type="submit" class="btn btn-primary btn-lg">Subir</button>
     </div>
   </div>
 </form>
