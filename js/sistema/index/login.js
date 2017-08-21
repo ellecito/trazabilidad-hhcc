@@ -116,4 +116,23 @@ $(document).ready(function() {
 		format_on: 'keyup'
 	});
 
+	function updateClock(){
+		$.ajax({
+	    	url: 'inicio/reloj/',
+	        type: 'post',
+	        dataType: 'json',
+	        success: function(json){
+	        	if(json.result){
+	            	$("#clock").html(json.html);
+	            	$("#clock").trigger("chosen:updated");
+	          	}
+	        }
+	    });
+	    var now = new Date();
+	    var delay = 1000 - (now % 1000);
+	    setTimeout(updateClock, delay);
+	}
+
+	updateClock();
+
 });

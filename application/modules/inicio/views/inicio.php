@@ -10,7 +10,7 @@
   <!-- contenido -->
   <div id="login" class="col-sm-4">
     <div class="page-header">
-      <h1>Ingreso de funcionarios</h1>
+      <h1>SISTEMA DE TRAZABILIDAD HHCC</h1>
     </div>
     <form id="form-login" name="form-login" method="post" class="form-horizontal form-signin" role="form">
       <div class="form-group">
@@ -30,7 +30,9 @@
     </form>
   </div>
 </div>
-
+<p id="clock" style="text-align: center;">
+  <?php echo strftime("%A, %d de %B de %Y, %H:%M:%S", strtotime(date("Y-m-d H:i:s"))); ?>
+</p>
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">

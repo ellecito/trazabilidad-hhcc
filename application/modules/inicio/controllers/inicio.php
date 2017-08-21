@@ -78,5 +78,9 @@ class Inicio extends CI_Controller {
 		$this->session->sess_destroy();
 		redirect('/');
 	}
+
+	public function reloj(){
+		echo json_encode(array("result" => true, "html" => strftime("%A, %d de %B de %Y, %H:%M:%S", strtotime(date("Y-m-d H:i:s")))));
+	}
 	
 }

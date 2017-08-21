@@ -17,8 +17,9 @@
  * NOTE: If you change these, also change the error_reporting() code below
  *
  */ 
-	include_once './vendor/autoload.php';
+	include_once './vendor/autoload.php'; //Composer
     date_default_timezone_set('America/Santiago');
+    setlocale(LC_ALL, 'es_ES.UTF-8');
 	define('URL_SITIO', 'http://' . $_SERVER["HTTP_HOST"] . '/hospital/');
 	define('ENVIRONMENT', 'development');
 	//define('ENVIRONMENT', 'production');

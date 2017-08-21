@@ -57,6 +57,39 @@ class Nominas extends CI_Controller {
 			"especialidades" => $this->objEspecialidad->listar()
 		);
 
+		$traza = array(
+			"agenda" => array(
+							"codigo",
+							"fecha_emision",
+							"fecha_citacion"
+						),
+			"unidad" => array(
+							"codigo",
+							"nombre"
+						),
+			"medico" => array(
+							"codigo",
+							"nombre",
+							"apellidos",
+							"rut"
+						),
+			"servicio" => array(
+							"codigo",
+							"nombre"
+						),
+			"especialidad" => array(
+							"codigo",
+							"nombre",
+						),
+			"paciente" => array(
+							"codigo",
+							"rut",
+							"hhcc",
+							"apellidos",
+							"nombres"
+						)
+		);
+
 		$this->layout->view('index', $contenido);
 	}
 
