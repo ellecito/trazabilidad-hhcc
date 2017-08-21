@@ -64,6 +64,7 @@ class Motivo_solicitudes extends CI_Controller {
 
 			#validaciones
 			$this->form_validation->set_rules('nombre', 'Nombre', 'required');
+			$this->form_validation->set_rules('dias', 'Días', 'required');
 
 			$this->form_validation->set_message('required', '* %s es obligatorio');
 			$this->form_validation->set_error_delimiters('<div>','</div>');
@@ -75,7 +76,8 @@ class Motivo_solicitudes extends CI_Controller {
 			
 			$datos = array(
 				'mo_codigo' => $this->objMotivo->getLastId(),
-				'mo_nombre' => $this->input->post('nombre')
+				'mo_nombre' => $this->input->post('nombre'),
+				'mo_dias' => $this->input->post('dias')
 			);
 			
 			if($this->objMotivo->insertar($datos)){
@@ -110,6 +112,7 @@ class Motivo_solicitudes extends CI_Controller {
 
 			#validaciones
 			$this->form_validation->set_rules('nombre', 'Nombre', 'required');
+			$this->form_validation->set_rules('dias', 'Días', 'required');
 
 			$this->form_validation->set_message('required', '* %s es obligatorio');
 			$this->form_validation->set_error_delimiters('<div>','</div>');
@@ -120,7 +123,8 @@ class Motivo_solicitudes extends CI_Controller {
 			}
 
 			$datos = array(
-				'mo_nombre' => $this->input->post('nombre')
+				'mo_nombre' => $this->input->post('nombre'),
+				'mo_dias' => $this->input->post('dias')
 			);
 
 			if($this->objMotivo->actualizar($datos,array("mo_codigo"=>$this->input->post('codigo')))){

@@ -23,6 +23,7 @@
       <tr>
         <th scope="col" style="width:90px;">Código</th>
         <th scope="col" style="width:400px;">Nombre</th>
+        <th scope="col" style="width:400px;">Días</th>
         <th scope="col" style="width:90px;">&nbsp;</th>
       </tr>
     </thead>
@@ -32,6 +33,7 @@
 				<tr>
 					<td><?php echo $motivo->codigo; ?></td>
 					<td><?php echo $motivo->nombre;?></td>
+          <td><?php echo $motivo->dias;?></td>
 					<td class="editar">
             <a class="eliminar" rel="<?php echo $motivo->codigo; ?>" href="#">
               <button title="Ver" type="button" class="btn btn-success btn-sm"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>

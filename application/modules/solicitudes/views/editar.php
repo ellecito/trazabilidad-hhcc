@@ -1,6 +1,5 @@
-<div class="page-header">
-	<h1>Editar Solicitud</h1>
-	
+<div class="page-header" style="text-align: center;">
+	<h1>Editar Solicitud</h1>	
 </div>
 <form class="form-horizontal" id="form-editar">
   <div class="form-group">

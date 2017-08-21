@@ -5,8 +5,12 @@
   <fieldset>
     <div class="form-group">
       <label for="nombre" class="col-sm-2 control-label">Nombre</label>
-      <div class="col-sm-10">
+      <div class="col-sm-4">
         <input type="text" id="nombre" name="nombre" class="form-control validate[required]" />
+      </div>
+      <label for="dias" class="col-sm-2 control-label">Días</label>
+      <div class="col-sm-4">
+        <input type="text" id="dias" name="dias" class="form-control validate[required, custom[integer]]" />
       </div>
     </div>
     <div class="text-box">

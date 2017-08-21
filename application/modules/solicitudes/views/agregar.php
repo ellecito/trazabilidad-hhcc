@@ -1,6 +1,5 @@
-<div class="page-header">
-	<h1>Agregar Solicitud</h1>
-	
+<div class="page-header" style="text-align: center;">
+	<h1>Agregar Solicitud</h1>	
 </div>
 <form class="form-horizontal" id="form-agregar">
   <div class="form-group">

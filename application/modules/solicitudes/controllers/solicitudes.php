@@ -80,12 +80,15 @@ class Solicitudes extends CI_Controller {
 				echo json_encode(array("result"=>false,"msg"=>validation_errors()));
 				exit;
 			}
-			//'so_fecha_entrega' => date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_retorno')))),
+
+			$motivo = $this->objMotivo->obtener(array("mo_codigo" => $this->input->post('motivo')));
+			$fecha_asignada = date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_entrega'))));
+			$fecha_entrega = date("Y-m-d", strtotime($fecha_asignada . "+" . $motivo->dias . " days"));
 			$datos = array(
 				'so_codigo' => $this->objSolicitud->getLastId(),
 				'so_fecha_emision' => date("Y-m-d H:i:s"),
-				'so_fecha_asignada' => date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_entrega')))),
-				'so_fecha_entrega' => date("Y-m-d"),
+				'so_fecha_asignada' => $fecha_asignada,
+				'so_fecha_entrega' => $fecha_entrega,
 				'fu_codigo' => $this->session->userdata("usuario")->codigo,
 				'me_codigo' => $this->input->post('medico'),
 				'mo_codigo' => $this->input->post('motivo'),
@@ -151,7 +154,6 @@ class Solicitudes extends CI_Controller {
 
 			#validaciones
 			$this->form_validation->set_rules('fecha_entrega', 'Fecha Entrega', 'required');
-			//$this->form_validation->set_rules('fecha_retorno', 'Fecha Retorno', 'required');
 			$this->form_validation->set_rules('paciente', 'Paciente', 'required');
 			$this->form_validation->set_rules('medico', 'Medico', 'required');
 			$this->form_validation->set_rules('motivo', 'Motivo', 'required');
@@ -165,9 +167,12 @@ class Solicitudes extends CI_Controller {
 				exit;
 			}
 
+			$fecha_asignada = date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_entrega'))));
+			$fecha_entrega = date("Y-m-d", strtotime($fecha_asignada . "+" . $motivo->dias . " days"));
+
 			$datos = array(
-				'so_fecha_asignada' => date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_entrega')))),
-				'so_fecha_entrega' => date("Y-m-d"),
+				'so_fecha_asignada' => $fecha_asignada,
+				'so_fecha_entrega' => $fecha_entrega,
 				'fu_codigo' => $this->session->userdata("usuario")->codigo,
 				'me_codigo' => $this->input->post('medico'),
 				'mo_codigo' => $this->input->post('motivo'),
@@ -250,7 +255,7 @@ class Solicitudes extends CI_Controller {
 			$solicitud_pacientes[] = $this->objPaciente->obtener(array("pa_codigo" => $sol_pac->pa_codigo));
 		}
 		$solicitud->pacientes = $solicitud_pacientes;
-		$html = "<div style='padding: 20px;'>";
+		$html = "<div style='padding: 20px; font-size: small;'>";
 		$html.= "<img src='" . base_url() . "imagenes/template/minsal.png' style='width: 10%;'/>";
 		$html.= "<h3 style='text-align: center;'>SOLICITUD DE HISTORIAS CLINICAS</h3>";
 
@@ -267,9 +272,9 @@ class Solicitudes extends CI_Controller {
 			$html.= "<p><b>EMAIL:</b> " . $solicitud->email_medico . "</p>";
 		}
 
-		$html.= "<p><b>FECHA EMISION:</b> " . $solicitud->fecha_emision . "</p>";
-		$html.= "<p><b>FECHA SOLICITUD:</b> " . $solicitud->fecha_asignada . "</p>";
-		$html.= "<p><b>FECHA ENTREGA:</b> " . $solicitud->fecha_entrega . "</p>";
+		$html.= "<p><b>FECHA EMISION:</b> " . formatearFecha(substr($solicitud->fecha_emision, 0, 10)) . "</p>";
+		$html.= "<p><b>FECHA SOLICITUD:</b> " . formatearFecha(substr($solicitud->fecha_asignada, 0, 10)) . "</p>";
+		$html.= "<p><b>FECHA ENTREGA:</b> " . formatearFecha(substr($solicitud->fecha_entrega, 0, 10)) . "</p>";
 		$html.= "<p><b>DETALLES:</b> " . $solicitud->detalle . "</p>";
 		
 		
@@ -280,9 +285,9 @@ class Solicitudes extends CI_Controller {
 		$html.="<p><b>PACIENTES:</b> </p>";
 		$html.="<table style='width: 100%;'>";
 		$html.="<tr>";
-		$html.="<td>HHCC</td>";
-		$html.="<td>RUT</td>";
-		$html.="<td>NOMBRE</td>";
+		$html.="<td><b>HHCC</b></td>";
+		$html.="<td><b>RUT</b></td>";
+		$html.="<td><b>NOMBRE</b></td>";
 		$html.="</tr>";
 		$html.= "/<div>";
 		foreach($solicitud->pacientes as $paciente){
@@ -302,18 +307,17 @@ class Solicitudes extends CI_Controller {
 			
 		$nombrePdf = "pdf".time().'.pdf';	 	 
 		require APPPATH."/libraries/mpdf/mpdf.php";
-		$mpdf->use_embeddedfonts_1252 = true; // false is default
-			
+		
 		ob_start();
 		$mpdf=new mPDF('utf-8','','','',0,0,0,0,6,3); 
 		$mpdf->SetDisplayMode('fullpage');
 		$mpdf->SetTitle('Solicitudes');
 		$mpdf->SetAuthor('HOSPITAL CHILLAN');
-		$mpdf->WriteHTML(file_get_contents(APPPATH . "/css/bootstrap.css"), 1);
+		$mpdf->WriteHTML(file_get_contents(base_url() . "css/nomina.css"), 1);
 		$mpdf->WriteHTML($html, 2);
 		$mpdf->Output($_SERVER['DOCUMENT_ROOT'].$rutaPdf.$nombrePdf,'F');
+		$rutaPdf = base_url() . "archivos/pdf/";
 		redirect($rutaPdf.$nombrePdf);
-		//echo $html;
 	}
 	
 }
