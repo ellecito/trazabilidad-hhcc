@@ -53,7 +53,7 @@ class Barra extends CI_Controller {
 			$html = "";
 			$pacientes = $this->objPaciente->listar($where);
 			foreach($pacientes as $paciente){
-				$html.= "<div style='text-align: center; padding-top: 15px;'>";
+				$html.= "<div style='text-align: center; padding: 10px; padding-top: 15px;'>";
 				$html.= '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($paciente->hhcc, $generator::TYPE_CODE_128)) . '"></br>';
 				$html.= "<p>" . $paciente->rut . "</p>";
 				$html.= "</div>";
@@ -71,19 +71,17 @@ class Barra extends CI_Controller {
 			
 			$nombrePdf = "pdf".time().'.pdf';	 	 
 			require APPPATH."/libraries/mpdf/mpdf.php";
-			$mpdf->use_embeddedfonts_1252 = true; // false is default
 			
 			ob_start();
 			$mpdf=new mPDF('utf-8',array(50,25),'','',0,0,0,0,6,3); 
 			$mpdf->SetDisplayMode('fullpage');
-			$mpdf->SetTitle('Nominas');
+			$mpdf->SetTitle('Barras');
 			$mpdf->SetAuthor('HOSPITAL CHILLAN');
-			//$mpdf->WriteHTML(file_get_contents(APPPATH . "/css/bootstrap.css"), 1);
 			$mpdf->WriteHTML($html, 2);
 			$mpdf->Output($_SERVER['DOCUMENT_ROOT'].$rutaPdf.$nombrePdf,'F');
+			$rutaPdf = base_url() . "archivos/pdf/";
 			echo json_encode(array("result"=>true,"url"=>$rutaPdf.$nombrePdf));
 			exit;
-			//redirect($rutaPdf.$nombrePdf);
 		}else{
 			redirect("/");
 		}
@@ -98,7 +96,7 @@ class Barra extends CI_Controller {
 				exit;
 			}
 			
-			$uploads_dir = $_SERVER['DOCUMENT_ROOT'].'/archivos/';
+			$uploads_dir = $_SERVER['DOCUMENT_ROOT'].'/hospital/archivos/';
 			if(!file_exists($uploads_dir)){
 				mkdir($uploads_dir,0777);
 			}
@@ -106,7 +104,9 @@ class Barra extends CI_Controller {
 			if(!file_exists($uploads_dir))
 				mkdir($uploads_dir,0777);
 
-			$extension = strtolower((array_pop(explode(".",$_FILES['archivo']['name']))));
+			$extension = explode(".",$_FILES['archivo']['name']);
+			$extension = array_pop($extension);
+			$extension = strtolower($extension);
 			$permitidas = array("xls","xlsx"); #extensiones permitidas
 			$name = 'barras_'.time();
 			$tmp = $_FILES["archivo"]["tmp_name"];
@@ -116,9 +116,9 @@ class Barra extends CI_Controller {
 				exit;
 			}
 			
-			move_uploaded_file($tmp, $uploads_dir.$name);
-			if(is_file($uploads_dir.$name))
-				chmod($uploads_dir.$name, 0777);
+			move_uploaded_file($tmp, $uploads_dir.$name . "." . $extension);
+			if(is_file($uploads_dir.$name . "." . $extension))
+				chmod($uploads_dir.$name . "." . $extension, 0777);
 
 			$ext = "Excel5";
 			if($extension == "xlsx")
@@ -126,11 +126,11 @@ class Barra extends CI_Controller {
 			
 			$objReader = PHPExcel_IOFactory::createReader($ext);
 			$objReader->setReadDataOnly(true);
-			if(!is_readable($uploads_dir.$name)) {
+			if(!is_readable($uploads_dir.$name . "." . $extension)) {
 				echo json_encode(array("result"=>false,"msg"=>"<div>El archivo esta corrupto.</div>"));
 				exit;
 			}
-			$objPHPExcel = $objReader->load($uploads_dir.$name);
+			$objPHPExcel = $objReader->load($uploads_dir.$name . "." . $extension);
 			$letra = 'A';
 			$i = 2;
 			$barras = array();
@@ -149,7 +149,7 @@ class Barra extends CI_Controller {
 			$generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
 			$html = "";
 			foreach($barras as $paciente){
-				$html.= "<div style='text-align: center; padding-top: 15px;'>";
+				$html.= "<div style='text-align: center; padding: 10px; padding-top: 15px;'>";
 				$html.= '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($paciente->hhcc, $generator::TYPE_CODE_128)) . '"></br>';
 				$html.= "<p>" . $paciente->rut . "</p>";
 				$html.= "</div>";
@@ -167,19 +167,17 @@ class Barra extends CI_Controller {
 			
 			$nombrePdf = "pdf".time().'.pdf';	 	 
 			require APPPATH."/libraries/mpdf/mpdf.php";
-			$mpdf->use_embeddedfonts_1252 = true; // false is default
 			
 			ob_start();
 			$mpdf=new mPDF('utf-8',array(50,25),'','',0,0,0,0,6,3); 
 			$mpdf->SetDisplayMode('fullpage');
 			$mpdf->SetTitle('Nominas');
 			$mpdf->SetAuthor('HOSPITAL CHILLAN');
-			//$mpdf->WriteHTML(file_get_contents(APPPATH . "/css/bootstrap.css"), 1);
 			$mpdf->WriteHTML($html, 2);
 			$mpdf->Output($_SERVER['DOCUMENT_ROOT'].$rutaPdf.$nombrePdf,'F');
+			$rutaPdf = base_url() . "archivos/pdf/";
 			echo json_encode(array("result"=>true,"url"=>$rutaPdf.$nombrePdf));
 			exit;
-			//redirect($rutaPdf.$nombrePdf);
 		}else{
 			echo json_encode(array("result"=>false,"msg"=>"<div>Error.</div>"));
 			exit;
@@ -187,7 +185,6 @@ class Barra extends CI_Controller {
 	}
 
 	public function ejemplo(){
-		
 
 		#libreria PHPExcel en libraries
 		require APPPATH."libraries/PHPExcel/PHPExcel.php";
@@ -265,7 +262,7 @@ class Barra extends CI_Controller {
 		
 		$objPHPExcel->setActiveSheetIndex(0)->setCellValue('A1', 'Pedidos');
 		
-		$i=2;
+		$i=1;
 		$letra = 'A';
 		$objPHPExcel->getActiveSheet()->getColumnDimension($letra)->setWidth(35);
 		$objPHPExcel->setActiveSheetIndex(0)->setCellValue($letra.$i, 'RUT');
