@@ -61,7 +61,7 @@ class Nominas extends CI_Controller {
 			"especialidades" => $this->objEspecialidad->listar(),
 			"clases" => $this->objClase->listar(),
 			"coberturas" => $this->objCobertura->listar(),
-			"canales" => $this->objCanal->listar(),
+			"canales" => $this->objCanal->listar()
 		);
 
 		$this->layout->view('index', $contenido);
@@ -88,7 +88,8 @@ class Nominas extends CI_Controller {
 			$where_clases = "cl_codigo IN (" . implode(",", $params["clases"]) . ")";
 			$where_coberturas = "co_codigo IN (" . implode(",", $params["coberturas"]) . ")";
 			$where_canales = "cn_codigo IN (" . implode(",", $params["canales"]) . ")";
-			$where_fecha = "ag_hora_agendada >= '" . date("Y-m-d", strtotime(str_replace("/", "-", $params["fecha"]))) . " 00:00:00'";
+			$where_fecha = "ag_hora_agendada BETWEEN '" . date("Y-m-d", strtotime(str_replace("/", "-", $params["fecha"]))) . " 00:00:00' AND '" . date("Y-m-d", strtotime(str_replace("/", "-", $params["fecha"]))) . " 23:59:00'";
+			$where_fecha2 = "so_fecha_asignada BETWEEN '" . date("Y-m-d", strtotime(str_replace("/", "-", $params["fecha"]))) . " 00:00:00' AND '" . date("Y-m-d", strtotime(str_replace("/", "-", $params["fecha"]))) . " 23:59:00'";
 
 			//Armado de nominas
 			$nominas = array();
@@ -181,10 +182,9 @@ class Nominas extends CI_Controller {
 	}
 
 	private function pdf_nominas($nominas){
-
 		$html = '';
 		foreach($nominas as $nomina){
-			$html.= '<div style="padding: 20px; font-size: 50%;"><center><h3>NOMINA HHCC</h3></center><table style="width: 100%; font-size: 50%;"><tr><td><b>NOMINA</b></td><td>' . $nomina->codigo . '</td></tr><tr><td><b>FEC. DESPACHO</b></td><td>' . formatearFecha(substr($nomina->fecha_asignacion, 0, 10)) . " " . substr($nomina->fecha_asignacion, 10, 6) . '</td><td><b>LUGAR ENTREGA</b></td><td>' . $nomina->ubicacion->codigo . '</td><td>' . $nomina->ubicacion->nombre . '</td><td><b>APROBADAS</b></td><td>' . count($nomina->pacientes) . '</td></tr><tr><td><b>FEC. CREACION</b></td><td>' . formatearFecha(substr($nomina->fecha_creacion, 0, 10)) . " " . substr($nomina->fecha_creacion, 10, 6) . '</td><td><b>SERVICIO</b></td><td>' . $nomina->medico->servicio->codigo . '</td><td>' . $nomina->medico->servicio->nombre . '</td><td><b>RECHAZADAS</b></td><td>0</td></tr><tr><td><b>TIPO ATENCION</b></td><td>AMB</td><td><b>ESPECIALIDAD</b></td><td>' . $nomina->medico->especialidad->codigo . '</td><td>' . $nomina->medico->especialidad->nombre . '</td><td><b>DEVUELTAS</b></td><td>0</td></tr><tr><td><b></b></td><td></td><td><b>PROFESIONAL</b></td><td>' . $nomina->medico->codigo . '</td><td>' . $nomina->medico->nombres . " " . $nomina->medico->apellidos . '</td><td><b>TOTAL</b></td><td>' .count($nomina->pacientes) . '</td></tr><tr style="border: 1px;"><td><b>HHCC</b></td><td><b>NOMBRE PACIENTE</b></td><td></td><td><b>LUGAR USO</b></td><td><b>HOR. DEV.</b></td><td><b>ULT. UBICACION</b></td><td></td></tr>';
+			$html.= '<div style="padding: 20px; font-size: 50%;"><img src="' . base_url() . 'imagenes/template/logo.png" style="width: 10%;"/><center><h3>NOMINA HHCC</h3></center><table style="width: 100%; font-size: 50%;"><tr><td><b>NOMINA</b></td><td>' . $nomina->codigo . '</td></tr><tr><td><b>FEC. ATENCION</b></td><td>' . formatearFecha(substr($nomina->fecha_asignacion, 0, 10)) . " " . substr($nomina->fecha_asignacion, 10, 6) . '</td><td><b>LUGAR ENTREGA</b></td><td>' . $nomina->ubicacion->codigo . '</td><td>' . $nomina->ubicacion->nombre . '</td><td><b>APROBADAS</b></td><td>' . count($nomina->pacientes) . '</td></tr><tr><td><b>FEC. CREACION</b></td><td>' . formatearFecha(substr($nomina->fecha_creacion, 0, 10)) . " " . substr($nomina->fecha_creacion, 10, 6) . '</td><td><b>SERVICIO</b></td><td>' . $nomina->medico->servicio->codigo . '</td><td>' . $nomina->medico->servicio->nombre . '</td><td><b>RECHAZADAS</b></td><td>0</td></tr><tr><td><b>TIPO ATENCION</b></td><td>AMB</td><td><b>ESPECIALIDAD</b></td><td>' . $nomina->medico->especialidad->codigo . '</td><td>' . $nomina->medico->especialidad->nombre . '</td><td><b>DEVUELTAS</b></td><td>0</td></tr><tr><td><b></b></td><td></td><td><b>PROFESIONAL</b></td><td>' . $nomina->medico->codigo . '</td><td>' . $nomina->medico->nombres . " " . $nomina->medico->apellidos . '</td><td><b>TOTAL</b></td><td>' .count($nomina->pacientes) . '</td></tr><tr style="border: 1px;"><td><b>HHCC</b></td><td><b>NOMBRE PACIENTE</b></td><td></td><td><b>LUGAR USO</b></td><td><b>HOR. DEV.</b></td><td><b>ULT. UBICACION</b></td><td></td></tr>';
 
 			foreach($nomina->pacientes as $paciente){
 				$html.= '<tr><td>' . $paciente->hhcc . '</td><td>' . $paciente->nombres . " " . $paciente->apellidos . '</td><td></td><td>LUGAR USO</td><td> ' . substr($paciente->hora, 10, 6) . '</td><td>---</td><td></td></tr>';
@@ -221,7 +221,7 @@ class Nominas extends CI_Controller {
 	public function pdf_vouchers($vouchers){
 		$html = '';
 		foreach($vouchers as $voucher){
-			$html.= '<div style="padding: 20px;"><center><h3>VOUCHER</h3></center>';
+			$html.= '<div style="padding: 20px;"><img src="' . base_url() . 'imagenes/template/logo.png" style="width: 10%;"/><center><h3>VOUCHER</h3></center>';
 			$html.= '<table style="width: 100%;">';
 			$html.= '<tr>';
 			$html.= '<td><b>FUNCIONARIO:</b></td>';
@@ -262,7 +262,7 @@ class Nominas extends CI_Controller {
 		$mpdf->SetDisplayMode('fullpage');
 		$mpdf->SetTitle('VOUCHERS');
 		$mpdf->SetAuthor('HOSPITAL CHILLAN');
-		$mpdf->WriteHTML(file_get_contents(base_url() . "css/nomina.css"), 1);
+		//$mpdf->WriteHTML(file_get_contents(base_url() . "css/nomina.css"), 1);
 		$mpdf->WriteHTML($html, 2);
 
 		$mpdf->Output($_SERVER['DOCUMENT_ROOT'].$rutaPdf.$nombrePdf,'F');
@@ -410,7 +410,7 @@ class Nominas extends CI_Controller {
 							"pa_nombres" => $paciente->nombres,
 							"pa_apellidos" => $paciente->apellido_paterno . " " . $paciente->apellido_materno,
 							"pa_estado" => 1,
-							"pa_hhcc" => $i - 1,
+							"pa_hhcc" => $paciente->hhcc,
 						);
 						$this->objPaciente->insertar($data);
 					}

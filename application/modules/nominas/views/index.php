@@ -1,6 +1,5 @@
 <div class="page-header">
-	<h1>Calculo de Nominas</h1>
-	
+	<h1>Calculo de Nominas</h1>	
 </div>
 <form class="form-horizontal" id="form-agregar" method=POST action="calculo/">
   <div class="form-group">

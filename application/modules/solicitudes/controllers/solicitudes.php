@@ -142,7 +142,7 @@ class Solicitudes extends CI_Controller {
 			$this->layout->nav(array("Solicitud "=> "solicitudes", "Agregar Solicitud" =>"/"));
 
 			$contenido = array(
-				"pacientes" => $this->objPaciente->listar(),
+				"pacientes" => $this->objPaciente->listar(false, false, 15),
 				"medicos" => $this->objMedicos->listar(),
 				"funcionarios" => $this->objFuncionario->listar(),
 				"motivos" => $this->objMotivo->listar(),

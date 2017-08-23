@@ -109,7 +109,7 @@ class Conformidad extends CI_Controller {
 			$this->layout->nav(array("Conformidad "=> "conformidad", "Agregar Conformidad" =>"/"));
 
 			$contenido = array(
-				"pacientes" => $this->objPaciente->listar(),
+				"pacientes" => $this->objPaciente->listar(false, false, 15),
 				"motivos" => $this->objMotivo->listar()
 			);
 
