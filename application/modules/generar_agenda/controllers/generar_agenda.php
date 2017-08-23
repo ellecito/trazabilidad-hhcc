@@ -58,8 +58,6 @@ class Generar_agenda extends CI_Controller {
 		$endtime = microtime(true);
 		$timediff = $endtime - $starttime;
 
-		//die(print_array($this->objAgenda->listar()));
-
 		$this->layout->view('index', array("timediff" => $timediff));
 	}
 	

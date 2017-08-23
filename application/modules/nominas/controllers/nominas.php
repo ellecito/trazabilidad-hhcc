@@ -48,6 +48,7 @@ class Nominas extends CI_Controller {
 		$this->layout->js('js/jquery/file-input/nicefileinput-init.js');
 
 		$this->layout->js('js/sistema/nominas/index.js');
+		$this->layout->js('js/sistema/nominas/file.js');
 
 
 
@@ -69,9 +70,11 @@ class Nominas extends CI_Controller {
 						),
 			"medico" => array(
 							"codigo",
-							"nombre",
-							"apellidos",
-							"rut"
+							"nombres",
+							"apellido_paterno",
+							"apellido_materno",
+							"rut",
+							"digito_verificador"
 						),
 			"servicio" => array(
 							"codigo",
@@ -83,12 +86,24 @@ class Nominas extends CI_Controller {
 						),
 			"paciente" => array(
 							"codigo",
+							"nombres",
+							"apellido_paterno",
+							"apellido_materno",
 							"rut",
-							"hhcc",
-							"apellidos",
-							"nombres"
+							"digito_verificador",
+							"hhcc"
+						),
+			"clase" => array(
+							"codigo",
+							"nombre"
+						),
+			"cobertura" => array(
+							"codigo",
+							"nombre"
 						)
 		);
+
+		//die(print_array($traza));
 
 		$this->layout->view('index', $contenido);
 	}
@@ -208,7 +223,7 @@ class Nominas extends CI_Controller {
 
 		$html = '';
 		foreach($nominas as $nomina){
-			$html.= '<div style="padding: 20px;"><center><h3>NOMINA HHCC</h3></center><table style="width: 100%;"><tr><td><b>NOMINA</b></td><td>' . $nomina->codigo . '</td></tr><tr><td><b>FEC. DESPACHO</b></td><td>' . formatearFecha(substr($nomina->fecha_asignacion, 0, 10)) . " " . substr($nomina->fecha_asignacion, 10, 6) . '</td><td><b>LUGAR ENTREGA</b></td><td>' . $nomina->ubicacion->codigo . '</td><td>' . $nomina->ubicacion->nombre . '</td><td><b>APROBADAS</b></td><td>' . count($nomina->pacientes) . '</td></tr><tr><td><b>FEC. CREACION</b></td><td>' . formatearFecha(substr($nomina->fecha_creacion, 0, 10)) . " " . substr($nomina->fecha_creacion, 10, 6) . '</td><td><b>SERVICIO</b></td><td>' . $nomina->medico->servicio->codigo . '</td><td>' . $nomina->medico->servicio->nombre . '</td><td><b>RECHAZADAS</b></td><td>0</td></tr><tr><td><b>TIPO ATENCION</b></td><td>AMB</td><td><b>ESPECIALIDAD</b></td><td>' . $nomina->medico->especialidad->codigo . '</td><td>' . $nomina->medico->especialidad->nombre . '</td><td><b>DEVUELTAS</b></td><td>0</td></tr><tr><td><b></b></td><td></td><td><b>PROFESIONAL</b></td><td>' . $nomina->medico->codigo . '</td><td>' . $nomina->medico->nombres . " " . $nomina->medico->apellidos . '</td><td><b>TOTAL</b></td><td>' .count($nomina->pacientes) . '</td></tr><tr style="border: 1px;"><td><b>HHCC</b></td><td><b>NOMBRE PACIENTE</b></td><td></td><td><b>LUGAR USO</b></td><td><b>HOR. DEV.</b></td><td><b>ULT. UBICACION</b></td><td></td></tr>';
+			$html.= '<div style="padding: 20px; font-size: 50%;"><center><h3>NOMINA HHCC</h3></center><table style="width: 100%; font-size: 50%;"><tr><td><b>NOMINA</b></td><td>' . $nomina->codigo . '</td></tr><tr><td><b>FEC. DESPACHO</b></td><td>' . formatearFecha(substr($nomina->fecha_asignacion, 0, 10)) . " " . substr($nomina->fecha_asignacion, 10, 6) . '</td><td><b>LUGAR ENTREGA</b></td><td>' . $nomina->ubicacion->codigo . '</td><td>' . $nomina->ubicacion->nombre . '</td><td><b>APROBADAS</b></td><td>' . count($nomina->pacientes) . '</td></tr><tr><td><b>FEC. CREACION</b></td><td>' . formatearFecha(substr($nomina->fecha_creacion, 0, 10)) . " " . substr($nomina->fecha_creacion, 10, 6) . '</td><td><b>SERVICIO</b></td><td>' . $nomina->medico->servicio->codigo . '</td><td>' . $nomina->medico->servicio->nombre . '</td><td><b>RECHAZADAS</b></td><td>0</td></tr><tr><td><b>TIPO ATENCION</b></td><td>AMB</td><td><b>ESPECIALIDAD</b></td><td>' . $nomina->medico->especialidad->codigo . '</td><td>' . $nomina->medico->especialidad->nombre . '</td><td><b>DEVUELTAS</b></td><td>0</td></tr><tr><td><b></b></td><td></td><td><b>PROFESIONAL</b></td><td>' . $nomina->medico->codigo . '</td><td>' . $nomina->medico->nombres . " " . $nomina->medico->apellidos . '</td><td><b>TOTAL</b></td><td>' .count($nomina->pacientes) . '</td></tr><tr style="border: 1px;"><td><b>HHCC</b></td><td><b>NOMBRE PACIENTE</b></td><td></td><td><b>LUGAR USO</b></td><td><b>HOR. DEV.</b></td><td><b>ULT. UBICACION</b></td><td></td></tr>';
 
 			foreach($nomina->pacientes as $paciente){
 				$html.= '<tr><td>' . $paciente->hhcc . '</td><td>' . $paciente->nombres . " " . $paciente->apellidos . '</td><td></td><td>LUGAR USO</td><td> ' . substr($paciente->hora, 10, 6) . '</td><td>---</td><td></td></tr>';
@@ -235,7 +250,7 @@ class Nominas extends CI_Controller {
 		$mpdf->SetTitle('NOMINAS');
 		$mpdf->SetAuthor('HOSPITAL CHILLAN');
 		$mpdf->SetHTMLFooter($firma);
-		$mpdf->WriteHTML(file_get_contents(base_url() . "css/nomina.css"), 1);
+		//$mpdf->WriteHTML(file_get_contents(base_url() . "css/nomina.css"), 1);
 		$mpdf->WriteHTML($html, 2);
 
 		$mpdf->Output($_SERVER['DOCUMENT_ROOT'].$rutaPdf.$nombrePdf,'F');
@@ -284,13 +299,117 @@ class Nominas extends CI_Controller {
 		$mpdf=new mPDF('utf-8','','','',0,0,0,0,6,3);
 		//$mpdf->use_embeddedfonts_1252 = true; // false is default
 		$mpdf->SetDisplayMode('fullpage');
-		$mpdf->SetTitle('NOMINAS');
+		$mpdf->SetTitle('VOUCHERS');
 		$mpdf->SetAuthor('HOSPITAL CHILLAN');
 		$mpdf->WriteHTML(file_get_contents(base_url() . "css/nomina.css"), 1);
 		$mpdf->WriteHTML($html, 2);
 
 		$mpdf->Output($_SERVER['DOCUMENT_ROOT'].$rutaPdf.$nombrePdf,'F');
 		return $rutaPdf.$nombrePdf;
+	}
+
+	public function importar(){
+		if($_FILES['archivo']['error'] == 0){
+
+			require APPPATH."libraries/PHPExcel/PHPExcel.php";
+
+			if($_FILES['archivo']['name']==''){
+				echo json_encode(array("result"=>false,"msg"=>"Debes subir un archivo"));
+				exit;
+			}
+			
+			$uploads_dir = $_SERVER['DOCUMENT_ROOT'].'/hospital/archivos/';
+			if(!file_exists($uploads_dir)){
+				mkdir($uploads_dir,0777);
+			}
+			$uploads_dir .= "importaciones/";
+			if(!file_exists($uploads_dir))
+				mkdir($uploads_dir,0777);
+
+			$extension = explode(".",$_FILES['archivo']['name']);
+			$extension = array_pop($extension);
+			$extension = strtolower($extension);
+			$permitidas = array("xls","xlsx"); #extensiones permitidas
+			$name = 'barras_'.time();
+			$tmp = $_FILES["archivo"]["tmp_name"];
+			
+			if(!in_array($extension, $permitidas)){
+				echo json_encode(array("result"=>false,"msg"=>"<div>Formato no permitido, solo se acepta xls y xlsx</div>"));
+				exit;
+			}
+			
+			move_uploaded_file($tmp, $uploads_dir.$name . "." . $extension);
+			if(is_file($uploads_dir.$name . "." . $extension))
+				chmod($uploads_dir.$name . "." . $extension, 0777);
+
+			$ext = "Excel5";
+			if($extension == "xlsx")
+				$ext = "Excel2007";
+			
+			$objReader = PHPExcel_IOFactory::createReader($ext);
+			$objReader->setReadDataOnly(true);
+			$objReader->setLoadSheetsOnly("Hoja1"); 
+			if(!is_readable($uploads_dir.$name . "." . $extension)) {
+				echo json_encode(array("result"=>false,"msg"=>"<div>El archivo esta corrupto.</div>"));
+				exit;
+			}
+			$objPHPExcel = $objReader->load($uploads_dir.$name . "." . $extension);
+
+			$letra = 'A';
+
+			$trazas = array();
+			for($i = 2; $i < 1000; $i++){
+				$traza = new stdClass();
+				$agenda = new stdClass();
+				$agenda->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$agenda->fecha_emision = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$agenda->fecha_citacion = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$traza->agenda = $agenda;
+
+				$unidad = new stdClass();
+				$unidad->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$unidad->nombre = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$traza->unidad = $unidad;
+
+				$medico = new stdClass();
+				$medico->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$medico->nombres = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$medico->apellido_paterno = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$medico->apellido_materno = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$medico->rut = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$medico->digito_verificador = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$traza->medico = $medico;
+
+				$servicio = new stdClass();
+				$servicio->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$servicio->nombre = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$traza->servicio = $servicio;
+
+				$especialidad = new stdClass();
+				$especialidad->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$especialidad->nombre = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$traza->especialidad = $especialidad;
+
+				$paciente = new stdClass();
+				$paciente->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$paciente->nombres = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$paciente->apellido_paterno = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$paciente->apellido_materno = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$paciente->rut = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$paciente->digito_verificador = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$paciente->hhcc = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+				$traza->paciente = $paciente;
+				$trazas[] = $traza;
+				$letra = 'A';
+			}
+
+			//die(print_array($trazas));
+			echo json_encode(array("result"=>true,"url"=>$rutaPdf.$nombrePdf));
+			exit;
+		}else{
+			echo json_encode(array("result"=>false,"msg"=>"<div>Error.</div>"));
+			exit;
+		}
 	}
 	
 }

@@ -18,9 +18,13 @@
  *
  */ 
 	include_once './vendor/autoload.php'; //Composer
+
+	//Informacion de localizacion
     date_default_timezone_set('America/Santiago');
     setlocale(LC_ALL, 'es_ES.UTF-8');
-	define('URL_SITIO', 'http://' . $_SERVER["HTTP_HOST"] . '/hospital/');
+
+    ini_set('memory_limit', '-1'); //Eliminar en produccion
+    
 	define('ENVIRONMENT', 'development');
 	//define('ENVIRONMENT', 'production');
 /*

@@ -52,14 +52,49 @@ $(function(){
    });
 
    $("#fecha_entrega").datepicker();
-   $("#fecha_retorno").datepicker();
    $('#medico').change(function(){
       if($(this).val() == 0){
         $("#hide_medico1").css("display", "block");
-        $("#hide_medico2").css("display", "block");
+        $("#especialidad").val("");
+        $("#servicio").val("");
       }else{
         $("#hide_medico1").css("display", "none");
-        $("#hide_medico2").css("display", "none");
+        $.ajax({
+          url: window.location.pathname.replace("/editar/" + $("#codigo").val(), "/esp_ser/"),
+          type: 'post',
+          dataType: 'json',
+          data: "codigo=" + $(this).val(),
+          success: function(json){
+            if(json.result){
+              $("#especialidad").val(json.especialidad.nombre);
+              $("#servicio").val(json.servicio.nombre);
+            }
+          }
+        });
       }
    });
+
+   function esp_ser(){
+    if($('#medico').val() == 0){
+        $("#hide_medico1").css("display", "block");
+        $("#especialidad").val("");
+        $("#servicio").val("");
+      }else{
+        $("#hide_medico1").css("display", "none");
+        $.ajax({
+          url: window.location.pathname.replace("/editar/" + $("#codigo").val(), "/esp_ser/"),
+          type: 'post',
+          dataType: 'json',
+          data: "codigo=" + $('#medico').val(),
+          success: function(json){
+            if(json.result){
+              $("#especialidad").val(json.especialidad.nombre);
+              $("#servicio").val(json.servicio.nombre);
+            }
+          }
+        });
+      }
+   }
+
+   esp_ser();
 });
