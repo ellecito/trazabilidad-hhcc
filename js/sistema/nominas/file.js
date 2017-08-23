@@ -37,10 +37,6 @@ $(document).ready(function() {
 									killer:true,
 									closeWith:[],
 								});
-
-							setTimeout(function(){
-								window.location= e.url;
-								},500);
 							}else{
 
 								noty({

@@ -15,8 +15,8 @@ class Solicitudes extends CI_Controller {
 		$this->load->model("servicios/modelo_servicios", "objServicio");
 		$this->load->model("medicos/modelo_medicos_especialidades", "objRel");
 		$this->load->model("unidades/modelo_unidades", "objUnidad");
-		$this->layout->current = 2;
-		$this->layout->subCurrent = 8;
+		$this->layout->current = 3;
+		//$this->layout->subCurrent = 8;
 	}
 
 	public function index($pagina = 1){

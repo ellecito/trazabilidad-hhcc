@@ -19,18 +19,21 @@ class Nominas extends CI_Controller {
 		$this->load->model("inicio/modelo_funcionarios", "objFuncionario");
 		$this->load->model("divisiones/modelo_divisiones", "objDivision");
 		$this->load->model("bodegas/modelo_bodegas", "objBodega");
+		$this->load->model("modelo_clase", "objClase");
+		$this->load->model("modelo_cobertura", "objCobertura");
+		$this->load->model("modelo_canal", "objCanal");
 		$this->layout->current = 4;
 	}
 
 	public function index(){
 
 		#title
-		$this->layout->title('Generar Nominas');
+		$this->layout->title('Calculo de Nominas');
 		
 		#metas
-		$this->layout->setMeta('title','Generar Nominas');
-		$this->layout->setMeta('description','Generar Nominas');
-		$this->layout->setMeta('keywords','Generar Nominas');
+		$this->layout->setMeta('title','Calculo de Nominas');
+		$this->layout->setMeta('description','Calculo de Nominas');
+		$this->layout->setMeta('keywords','Calculo de Nominas');
 
 		#JS - Multiple select boxes
 		$this->layout->css('js/jquery/bootstrap-multi-select/dist/css/bootstrap-select.css');
@@ -55,55 +58,11 @@ class Nominas extends CI_Controller {
 		$contenido = array(
 			"medicos" => $this->objMedico->listar(array("me_estado" => 1)),
 			"boxs" => $this->objBox->listar(),
-			"especialidades" => $this->objEspecialidad->listar()
+			"especialidades" => $this->objEspecialidad->listar(),
+			"clases" => $this->objClase->listar(),
+			"coberturas" => $this->objCobertura->listar(),
+			"canales" => $this->objCanal->listar(),
 		);
-
-		$traza = array(
-			"agenda" => array(
-							"codigo",
-							"fecha_emision",
-							"fecha_citacion"
-						),
-			"unidad" => array(
-							"codigo",
-							"nombre"
-						),
-			"medico" => array(
-							"codigo",
-							"nombres",
-							"apellido_paterno",
-							"apellido_materno",
-							"rut",
-							"digito_verificador"
-						),
-			"servicio" => array(
-							"codigo",
-							"nombre"
-						),
-			"especialidad" => array(
-							"codigo",
-							"nombre",
-						),
-			"paciente" => array(
-							"codigo",
-							"nombres",
-							"apellido_paterno",
-							"apellido_materno",
-							"rut",
-							"digito_verificador",
-							"hhcc"
-						),
-			"clase" => array(
-							"codigo",
-							"nombre"
-						),
-			"cobertura" => array(
-							"codigo",
-							"nombre"
-						)
-		);
-
-		//die(print_array($traza));
 
 		$this->layout->view('index', $contenido);
 	}
@@ -126,6 +85,9 @@ class Nominas extends CI_Controller {
 			$where_medico = "me_estado = 1 AND me_codigo IN (" . implode(",", $params["medicos"]) . ")";
 			$where_especialidades = "es_codigo IN (" . implode(",", $params["especialidades"]) . ")";
 			$where_boxs = "bx_codigo IN (" . implode(",", $params["boxs"]) . ")";
+			$where_clases = "cl_codigo IN (" . implode(",", $params["clases"]) . ")";
+			$where_coberturas = "co_codigo IN (" . implode(",", $params["coberturas"]) . ")";
+			$where_canales = "cn_codigo IN (" . implode(",", $params["canales"]) . ")";
 			$where_fecha = "ag_hora_agendada >= '" . date("Y-m-d", strtotime(str_replace("/", "-", $params["fecha"]))) . " 00:00:00'";
 
 			//Armado de nominas
@@ -135,7 +97,7 @@ class Nominas extends CI_Controller {
 			foreach($this->objMedico->listar($where_medico) as $medico){
 				//Calculo de nomina por medico
 				foreach($this->objRelE->listar($where_especialidades . " AND me_codigo =" . $medico->codigo) as $especialidad){
-					$where = $where_boxs . " AND me_codigo = " . $medico->codigo . " AND " . $where_fecha . " AND es_codigo = " . $especialidad->es_codigo;
+					$where = $where_boxs . " AND me_codigo = " . $medico->codigo . " AND " . $where_fecha . " AND es_codigo = " . $especialidad->es_codigo . " AND " . $where_clases . " AND " . $where_coberturas . " AND " . $where_canales;
 					if($agendas = $this->objAgenda->listar($where)){
 						$nomina = new stdClass();
 						$nomina->codigo = $this->objNominas->getLastId();
@@ -159,7 +121,6 @@ class Nominas extends CI_Controller {
 
 						//Relacion Nomina-Agenda
 						$pacientes = array();
-						$boxs = array();
 						$hora_asignacion = strtotime("08:00:00");
 						foreach($nomina->agendas as $agenda){
 							$rel = array(
@@ -356,55 +317,160 @@ class Nominas extends CI_Controller {
 			$objPHPExcel = $objReader->load($uploads_dir.$name . "." . $extension);
 
 			$letra = 'A';
+			$i = 2;
 
-			$trazas = array();
-			for($i = 2; $i < 1000; $i++){
-				$traza = new stdClass();
+			while(true){
 				$agenda = new stdClass();
 				$agenda->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
 				$agenda->fecha_emision = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
 				$agenda->fecha_citacion = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$traza->agenda = $agenda;
 
-				$unidad = new stdClass();
-				$unidad->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$unidad->nombre = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$traza->unidad = $unidad;
+				if($agenda->codigo == "") break; //Termina
+				//Verifica si la orden de compra no esta en el sistema, de ser asi, la guarda
+				if(!$this->objAgenda->obtener(array("ag_codigo" => $agenda->codigo))){
+					$unidad = new stdClass();
+					$unidad->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+					$unidad->nombre = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
 
-				$medico = new stdClass();
-				$medico->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$medico->nombres = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$medico->apellido_paterno = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$medico->apellido_materno = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$medico->rut = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$medico->digito_verificador = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$traza->medico = $medico;
+					if(!$this->objBox->obtener(array("bx_codigo" => $unidad->codigo))){
+						$data = array(
+							"bx_codigo" => $unidad->codigo,
+							"bx_nombre" => $unidad->nombre,
+							"un_codigo" => 1
+						);
+						$this->objBox->insertar($data);
+					}
 
-				$servicio = new stdClass();
-				$servicio->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$servicio->nombre = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$traza->servicio = $servicio;
+					$medico = new stdClass();
+					$medico->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+					$medico->nombres = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+					$medico->apellido_paterno = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+					$medico->apellido_materno = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+					$medico->rut = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+					$medico->digito_verificador = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
 
-				$especialidad = new stdClass();
-				$especialidad->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$especialidad->nombre = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$traza->especialidad = $especialidad;
+					if(!$this->objMedico->obtener(array("me_codigo" => $medico->codigo))){
+						$data = array(
+							"me_codigo" => $medico->codigo,
+							"me_rut" => number_format($medico->rut, 0, ".", ".") . "-" . $medico->digito_verificador,
+							"me_nombres" => $medico->nombres,
+							"me_apellidos" => $medico->apellido_paterno . " " . $medico->apellido_materno,
+							"me_estado" => 1
+						);
+						$this->objMedico->insertar($data);
+					}
 
-				$paciente = new stdClass();
-				$paciente->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$paciente->nombres = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$paciente->apellido_paterno = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$paciente->apellido_materno = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$paciente->rut = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$paciente->digito_verificador = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$paciente->hhcc = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
-				$traza->paciente = $paciente;
-				$trazas[] = $traza;
+					$servicio = new stdClass();
+					$servicio->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+					$servicio->nombre = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+
+					if(!$this->objServicio->obtener(array("se_codigo" => $servicio->codigo))){
+						$data = array(
+							"se_codigo" => $servicio->codigo,
+							"se_nombre" => $servicio->nombre,
+							"un_codigo" => 1
+						);
+						$this->objServicio->insertar($data);
+					}
+
+					$especialidad = new stdClass();
+					$especialidad->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+					$especialidad->nombre = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+
+					if(!$this->objEspecialidad->obtener(array("es_codigo" => $especialidad->codigo))){
+						$data = array(
+							"es_codigo" => $especialidad->codigo,
+							"es_nombre" => $especialidad->nombre,
+							"se_codigo" => $servicio->codigo
+						);
+						$this->objEspecialidad->insertar($data);
+					}
+
+					if(!$this->objRelE->obtener(array("es_codigo" => $especialidad->codigo, "me_codigo" => $medico->codigo))){
+						$data = array(
+							"es_codigo" => $especialidad->codigo,
+							"me_codigo" => $medico->codigo
+						);
+						$this->objRelE->insertar($data);
+					}
+
+					$paciente = new stdClass();
+					$paciente->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+					$paciente->nombres = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+					$paciente->apellido_paterno = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+					$paciente->apellido_materno = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+					$paciente->rut = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+					$paciente->digito_verificador = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+					$paciente->hhcc = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+
+					if(!$this->objPaciente->obtener(array("pa_codigo" => $paciente->codigo))){
+						$data = array(
+							"pa_codigo" => $paciente->codigo,
+							"pa_rut" => number_format($paciente->rut, 0, ".", ".") . "-" . $paciente->digito_verificador,
+							"pa_nombres" => $paciente->nombres,
+							"pa_apellidos" => $paciente->apellido_paterno . " " . $paciente->apellido_materno,
+							"pa_estado" => 1,
+							"pa_hhcc" => $i - 1,
+						);
+						$this->objPaciente->insertar($data);
+					}
+
+					$clase = new stdClass();
+					$clase->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+					$clase->nombre = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+
+					if(!$this->objClase->obtener(array("cl_codigo" => $clase->codigo))){
+						$data = array(
+							"cl_codigo" => $clase->codigo,
+							"cl_nombre" => $clase->nombre
+						);
+						$this->objClase->insertar($data);
+					}
+
+					$cobertura = new stdClass();
+					$cobertura->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+					$cobertura->nombre = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+
+					if(!$this->objCobertura->obtener(array("co_codigo" => $cobertura->codigo))){
+						$data = array(
+							"co_codigo" => $cobertura->codigo,
+							"co_nombre" => $cobertura->nombre
+						);
+						$this->objCobertura->insertar($data);
+					}
+
+					$canal = new stdClass();
+					$canal->codigo = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+					$canal->nombre = $objPHPExcel->getActiveSheet()->getCell($letra++.$i)->getValue();
+
+					if(!$this->objCanal->obtener(array("cn_codigo" => $canal->codigo))){
+						$data = array(
+							"cn_codigo" => $canal->codigo,
+							"cn_nombre" => $canal->nombre
+						);
+						$this->objCanal->insertar($data);
+					}
+
+					$data = array(
+						"ag_codigo" => $agenda->codigo,
+						"ag_hora_pedido" => $agenda->fecha_emision,
+						"ag_hora_agendada" => $agenda->fecha_citacion,
+						"pa_codigo" => $paciente->codigo,
+						"me_codigo" => $medico->codigo,
+						"bx_codigo" => $unidad->codigo,
+						"es_codigo" => $especialidad->codigo,
+						"cn_codigo" => $canal->codigo,
+						"co_codigo" => $cobertura->codigo,
+						"cl_codigo" => $clase->codigo
+					);
+					$this->objAgenda->insertar($data);
+				}
 				$letra = 'A';
+				$i++;
+				//if($i == 1000) break;
 			}
 
-			//die(print_array($trazas));
-			echo json_encode(array("result"=>true,"url"=>$rutaPdf.$nombrePdf));
+			echo json_encode(array("result"=>true,"msg"=>"<div>Archivo importado.</div>"));
 			exit;
 		}else{
 			echo json_encode(array("result"=>false,"msg"=>"<div>Error.</div>"));
@@ -412,4 +478,7 @@ class Nominas extends CI_Controller {
 		}
 	}
 	
+	public function ejemplo(){
+		redirect(base_url() . "/archivos/template_traza.xls");
+	}
 }

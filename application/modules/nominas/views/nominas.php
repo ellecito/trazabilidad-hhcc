@@ -2,7 +2,7 @@
   <h1>Nominas</h1>
 </div>
 <a href="<?php echo $pdf; ?>">Imprimir Nominas</a> | <a href="<?php echo $pdf_voucher; ?>">Imprimir Vouchers</a><br/>
-Script se demoro <?php echo round($timediff); ?> segundos.
+Script se demoró <?php echo round($timediff/60); ?> minutos.
 <?php foreach($nominas as $nomina){ ?>
 <center><h3>NOMINA HHCC</h3></center>
 <table style="width: 100%;">

@@ -25,7 +25,7 @@
         </ul>
     
         <ul class="nav navbar-nav side-nav">
-			<li><a href="<?php echo base_url(); ?>barra/">Generar Codigos de Barra</a></li>
+			<li><a href="<?php echo base_url(); ?>barra/">Generar Códigos de Barra</a></li>
             <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Mantenedores <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="<?php echo base_url(); ?>pacientes/">Pacientes</a></li>
@@ -44,8 +44,8 @@
                     <li><a href="<?php echo base_url(); ?>conformidad/">Conformidad</a></li>
                 </ul>
             </li>
-            <li><a href="<?php echo base_url(); ?>generar_agenda/">Generar Agenda</a></li>
-            <li><a href="<?php echo base_url(); ?>nominas/">Generar Nominas</a></li>
+            <li><a href="<?php echo base_url(); ?>solicitudes/">Formulario de Solicitud</a></li>
+            <li><a href="<?php echo base_url(); ?>nominas/">Calculo de Nominas</a></li>
         </ul>
     </div>
 </nav>
