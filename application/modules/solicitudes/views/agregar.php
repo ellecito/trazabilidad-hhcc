@@ -26,7 +26,7 @@
   <div class="form-group">
     <label for="especialidad" class="col-sm-2 control-label">Especialidad:</label>
     <div class="col-sm-4">
-      <input readonly type="text" id="especialidad" name="especialidad" class="form-control validate[required]" />
+      <input readonly type="text" id="especialidad" name="especialidad" class="form-control" />
     </div>
     <label for="telefono" class="col-sm-2 control-label">Fono:</label>
     <div class="col-sm-4">
@@ -37,7 +37,7 @@
   <div class="form-group">
     <label for="servicio" class="col-sm-2 control-label">Servicio:</label>
     <div class="col-sm-4">
-      <input readonly type="text" id="servicio" name="servicio" class="form-control validate[required]" />
+      <input readonly type="text" id="servicio" name="servicio" class="form-control" />
     </div>
     <label for="celular" class="col-sm-2 control-label">Celular:</label>
     <div class="col-sm-4">
@@ -84,6 +84,16 @@
     </div>
     <div class="text-box">
       <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
+    </div>
+  </div>
+
+  <div class="form-group" style="display: none;" id="hide_medico2">
+    <label for="documento" class="col-sm-2 control-label">Documento</label>
+    <div class="col-sm-4">
+      <input id="documento" type="file" class="nicefileinput nice" name="documento" accept=".pdf, .doc, .docx"/>
+    </div>
+    <label class="col-sm-2 control-label"></label>
+    <div class="col-sm-4">
     </div>
   </div>
 

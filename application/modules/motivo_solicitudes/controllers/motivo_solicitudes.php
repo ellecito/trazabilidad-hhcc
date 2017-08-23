@@ -65,6 +65,7 @@ class Motivo_solicitudes extends CI_Controller {
 			#validaciones
 			$this->form_validation->set_rules('nombre', 'Nombre', 'required');
 			$this->form_validation->set_rules('dias', 'Días', 'required');
+			$this->form_validation->set_rules('documento', 'Documento', 'required');
 
 			$this->form_validation->set_message('required', '* %s es obligatorio');
 			$this->form_validation->set_error_delimiters('<div>','</div>');
@@ -77,7 +78,8 @@ class Motivo_solicitudes extends CI_Controller {
 			$datos = array(
 				'mo_codigo' => $this->objMotivo->getLastId(),
 				'mo_nombre' => $this->input->post('nombre'),
-				'mo_dias' => $this->input->post('dias')
+				'mo_dias' => $this->input->post('dias'),
+				"mo_documento" => $this->input->post('documento')
 			);
 			
 			if($this->objMotivo->insertar($datos)){
@@ -96,6 +98,10 @@ class Motivo_solicitudes extends CI_Controller {
 			$this->layout->setMeta('description','Agregar Motivo Solicitud');
 			$this->layout->setMeta('keywords','Agregar Motivo Solicitud');
 
+			#JS - Multiple select boxes
+			$this->layout->css('js/jquery/bootstrap-multi-select/dist/css/bootstrap-select.css');
+			$this->layout->js('js/jquery/bootstrap-multi-select/js/bootstrap-select.js');
+
 			#js
 			$this->layout->js('js/sistema/motivo_solicitudes/agregar.js');
 
@@ -113,6 +119,7 @@ class Motivo_solicitudes extends CI_Controller {
 			#validaciones
 			$this->form_validation->set_rules('nombre', 'Nombre', 'required');
 			$this->form_validation->set_rules('dias', 'Días', 'required');
+			$this->form_validation->set_rules('documento', 'Documento', 'required');
 
 			$this->form_validation->set_message('required', '* %s es obligatorio');
 			$this->form_validation->set_error_delimiters('<div>','</div>');
@@ -124,7 +131,8 @@ class Motivo_solicitudes extends CI_Controller {
 
 			$datos = array(
 				'mo_nombre' => $this->input->post('nombre'),
-				'mo_dias' => $this->input->post('dias')
+				'mo_dias' => $this->input->post('dias'),
+				"mo_documento" => $this->input->post('documento')
 			);
 
 			if($this->objMotivo->actualizar($datos,array("mo_codigo"=>$this->input->post('codigo')))){
@@ -136,6 +144,11 @@ class Motivo_solicitudes extends CI_Controller {
 			}
 		}else{
 			if(!$codigo) redirect(base_url() . "motivo-solicitudes/");
+
+			#JS - Multiple select boxes
+			$this->layout->css('js/jquery/bootstrap-multi-select/dist/css/bootstrap-select.css');
+			$this->layout->js('js/jquery/bootstrap-multi-select/js/bootstrap-select.js');
+
 			#js
 			$this->layout->js('js/sistema/motivo_solicitudes/editar.js');
 

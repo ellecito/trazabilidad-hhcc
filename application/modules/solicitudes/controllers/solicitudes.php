@@ -85,23 +85,63 @@ class Solicitudes extends CI_Controller {
 			}
 
 			$motivo = $this->objMotivo->obtener(array("mo_codigo" => $this->input->post('motivo')));
+
+			if($motivo->documento && $_FILES['documento']['error'] != 0){
+				echo json_encode(array("result"=>false,"msg"=>"<div>Se requiero documento.</div>"));
+				exit;
+			}
+
 			$fecha_asignada = date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_entrega'))));
 			$fecha_entrega = date("Y-m-d", strtotime($fecha_asignada . "+" . $motivo->dias . " days"));
-			$datos = array(
-				'so_codigo' => $this->objSolicitud->getLastId(),
-				'so_fecha_emision' => date("Y-m-d H:i:s"),
-				'so_fecha_asignada' => $fecha_asignada,
-				'so_fecha_entrega' => $fecha_entrega,
-				'so_detalle' => $this->input->post('detalle'),
-				'so_nombre_medico' => $this->input->post('nombre'),
-				'so_email_medico' => $this->input->post('email'),
-				'so_telefono' => $this->input->post('telefono'),
-				'so_anexo' => $this->input->post('anexo'),
-				'so_celular' => $this->input->post('celular'),
-				'fu_codigo' => $this->session->userdata("usuario")->codigo,
-				'me_codigo' => $this->input->post('medico'),
-				'mo_codigo' => $this->input->post('motivo')
-			);
+
+			if($_FILES['documento']['error'] == 0){
+				require APPPATH."libraries/PHPExcel/PHPExcel.php";
+
+				if($_FILES['documento']['name']==''){
+					echo json_encode(array("result"=>false,"msg"=>"Debes subir un archivo"));
+					exit;
+				}
+				
+				$uploads_dir = $_SERVER['DOCUMENT_ROOT'].'/hospital/archivos/';
+				if(!file_exists($uploads_dir)){
+					mkdir($uploads_dir,0777);
+				}
+				$uploads_dir .= "solicitaciones/";
+				if(!file_exists($uploads_dir))
+					mkdir($uploads_dir,0777);
+
+				$extension = explode(".",$_FILES['documento']['name']);
+				$extension = array_pop($extension);
+				$extension = strtolower($extension);
+				$permitidas = array("pdf","doc","docx"); #extensiones permitidas
+				$name = 'solicitaciones_'.time();
+				$tmp = $_FILES["documento"]["tmp_name"];
+				
+				if(!in_array($extension, $permitidas)){
+					echo json_encode(array("result"=>false,"msg"=>"<div>Formato no permitido, solo se acepta pdf, doc y docx.</div>"));
+					exit;
+				}
+				
+				move_uploaded_file($tmp, $uploads_dir.$name . "." . $extension);
+				if(is_file($uploads_dir.$name . "." . $extension))
+					chmod($uploads_dir.$name . "." . $extension, 0777);
+				$uploads_dir = base_url() . "archivos/solicitaciones/";
+				$datos["so_documento"] = $uploads_dir.$name . "." . $extension;
+			}
+
+			$datos['so_codigo'] = $this->objSolicitud->getLastId();
+			$datos['so_fecha_emision'] = date("Y-m-d H:i:s");
+			$datos['so_fecha_asignada'] = $fecha_asignada;
+			$datos['so_fecha_entrega'] = $fecha_entrega;
+			$datos['so_detalle'] = $this->input->post('detalle');
+			$datos['so_nombre_medico'] = $this->input->post('nombre');
+			$datos['so_email_medico'] = $this->input->post('email');
+			$datos['so_telefono'] = $this->input->post('telefono');
+			$datos['so_anexo'] = $this->input->post('anexo');
+			$datos['so_celular'] = $this->input->post('celular');
+			$datos['fu_codigo'] = $this->session->userdata("usuario")->codigo;
+			$datos['me_codigo'] = $this->input->post('medico');
+			$datos['mo_codigo'] = $this->input->post('motivo');
 			
 			if($this->objSolicitud->insertar($datos)){
 				foreach($this->input->post('paciente') as $paciente){
@@ -134,6 +174,10 @@ class Solicitudes extends CI_Controller {
 			#JS - Multiple select boxes
 			$this->layout->css('js/jquery/bootstrap-multi-select/dist/css/bootstrap-select.css');
 			$this->layout->js('js/jquery/bootstrap-multi-select/js/bootstrap-select.js');
+
+			#JS - Formulario
+			$this->layout->js('js/jquery/file-input/jquery.nicefileinput.min.js');
+			$this->layout->js('js/jquery/file-input/nicefileinput-init.js');
 
 			#js
 			$this->layout->js('js/sistema/solicitudes/agregar.js');
@@ -262,6 +306,16 @@ class Solicitudes extends CI_Controller {
 			$especialidad = $this->objEspecialidad->obtener(array("es_codigo" => $medico_especialidades[0]->es_codigo));
 			$servicio = $this->objServicio->obtener(array("se_codigo" => $especialidad->se_codigo));
 			echo json_encode(array("result" => true, "especialidad" => $especialidad, "servicio" => $servicio));
+			exit;
+		}else{
+			redirect(base_url());
+		}
+	}
+
+	public function motivo(){
+		if($this->input->post()){
+			$motivo = $this->objMotivo->obtener(array("mo_codigo" => $this->input->post("codigo")));
+			echo json_encode(array("result" => true, "motivo" => $motivo));
 			exit;
 		}else{
 			redirect(base_url());
