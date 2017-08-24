@@ -59,4 +59,48 @@ $(document).ready(function() {
 				}
 	});
 
+	var options = {
+        ajax          : {
+            url     : window.location.pathname + "/buscar_paciente/",
+            type    : 'POST',
+            dataType: 'json',
+            // Use "{{{q}}}" as a placeholder and Ajax Bootstrap Select will
+            // automatically replace it with the value of the search query.
+            data    : {
+                q: '{{{q}}}'
+            }
+        },
+        locale        : {
+            emptyTitle: 'Buscar',
+            statusInitialized: 'Escriba para buscar',
+            currentlySelected: 'Seleccionado actualmente',
+            errorText: 'No se pudo encontrar resultados',
+            searchPlaceholder: 'Buscar...',
+            statusSearching: 'Buscando...',
+            statusNoResults: 'Sin resultados',
+            statusTooShort: 'Por favor ingresar mas caracteres'
+        },
+        log           : 3,
+        preprocessData: function (data) {
+            var i, l = data.length, array = [];
+            if (l) {
+                for (i = 0; i < l; i++) {
+                    array.push($.extend(true, data[i], {
+                        text : data[i].hhcc,
+                        value: data[i].codigo,
+                        data : {
+                            subtext: data[i].rut + " | " + data[i].nombres + " " + data[i].apellidos
+                        }
+                    }));
+                }
+            }
+            // You must always return a valid array when processing data. The
+            // data argument passed is a clone and cannot be modified directly.
+            return array;
+        }
+    };
+
+    $('.selectpicker').selectpicker().filter('.with-ajax').ajaxSelectPicker(options);
+    $('select').trigger('change');
+
 });

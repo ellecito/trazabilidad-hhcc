@@ -102,6 +102,10 @@ class Conformidad extends CI_Controller {
 			$this->layout->css('js/jquery/bootstrap-multi-select/dist/css/bootstrap-select.css');
 			$this->layout->js('js/jquery/bootstrap-multi-select/js/bootstrap-select.js');
 
+			#JS - Ajax multi select
+			$this->layout->js('js/jquery/ajax-bootstrap-select-master/dist/js/ajax-bootstrap-select.js');
+			$this->layout->css('js/jquery/ajax-bootstrap-select-master/dist/css/ajax-bootstrap-select.css');
+
 			#js
 			$this->layout->js('js/sistema/conformidad/agregar.js');
 
@@ -109,7 +113,6 @@ class Conformidad extends CI_Controller {
 			$this->layout->nav(array("Conformidad "=> "conformidad", "Agregar Conformidad" =>"/"));
 
 			$contenido = array(
-				"pacientes" => $this->objPaciente->listar(false, false, 15),
 				"motivos" => $this->objMotivo->listar()
 			);
 
@@ -157,6 +160,10 @@ class Conformidad extends CI_Controller {
 			$this->layout->css('js/jquery/bootstrap-multi-select/dist/css/bootstrap-select.css');
 			$this->layout->js('js/jquery/bootstrap-multi-select/js/bootstrap-select.js');
 
+			#JS - Ajax multi select
+			$this->layout->js('js/jquery/ajax-bootstrap-select-master/dist/js/ajax-bootstrap-select.js');
+			$this->layout->css('js/jquery/ajax-bootstrap-select-master/dist/css/ajax-bootstrap-select.css');
+
 			#js
 			$this->layout->js('js/sistema/conformidad/editar.js');
 
@@ -170,9 +177,10 @@ class Conformidad extends CI_Controller {
 
 			$contenido = array(
 				"conformidad" => $this->objConformidad->obtener(array("co_codigo" => $codigo)),
-				"pacientes" => $this->objPaciente->listar(),
 				"motivos" => $this->objMotivo->listar()
 			);
+
+			$contenido["paciente"] = $this->objPaciente->obtener(array("pa_codigo" => $contenido["conformidad"]->pa_codigo));
 
 			#contenido
 			if($contenido['conformidad']){
@@ -184,6 +192,19 @@ class Conformidad extends CI_Controller {
 			$this->layout->view('editar',$contenido);
 
 		}
+	}
+
+	public function buscar_paciente(){
+		if($this->input->post()){
+			$q = $this->input->post("q");
+			$where = "CONCAT(pa_nombres, ' ', pa_apellidos) like '%$q%' or pa_rut like '%$q%' or pa_hhcc like '%$q%'";
+			$pacientes = $this->objPaciente->listar($where, false, 15);
+			echo json_encode($pacientes);
+			exit;
+		}else{
+			redirect(base_url());
+		}
+		
 	}
 	
 }

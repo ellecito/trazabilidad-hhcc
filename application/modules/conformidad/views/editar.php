@@ -6,14 +6,8 @@
   <div class="form-group">
     <label for="paciente" class="col-sm-2 control-label">Paciente</label>
     <div class="col-sm-4">
-      <select id="paciente" name="paciente" class="selectpicker validate[required]" data-live-search="true">
-           <option disabled>Seleccione</option>
-           <?php if($pacientes){ ?>
-           <?php foreach($pacientes as $paciente){ ?>
-           <option value="<?php echo $paciente->codigo; ?>" <?php if($paciente->codigo == $conformidad->pa_codigo) echo "selected"; ?>><?php echo $paciente->rut . " | " .$paciente->nombres . " " . $paciente->apellidos; ?></option>
-           <?php } ?>
-           <?php } ?>
-           
+      <select id="paciente" name="paciente" class="selectpicker with-ajax validate[required]" data-live-search="true">
+           <option value="<?php echo $paciente->codigo; ?>" selected data-subtext="<?php echo $paciente->rut . " | " . $paciente->nombres . " " . $paciente->apellidos;  ?>"><?php echo $paciente->hhcc; ?></option>
         </select>
     </div>
     <label for="cantidad" class="col-sm-2 control-label">Cantidad</label>

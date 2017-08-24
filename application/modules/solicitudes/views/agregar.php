@@ -67,14 +67,8 @@
   <div class="form-group">
     <label for="paciente" class="col-sm-2 control-label">Paciente</label>
     <div class="col-sm-4">
-      <select id="paciente" name="paciente[]" class="selectpicker validate[required]" data-live-search="true" multiple>
-           <?php if($pacientes){ ?>
-           <?php foreach($pacientes as $paciente){ ?>
-           <option value="<?php echo $paciente->codigo; ?>"><?php echo $paciente->hhcc . " | " . $paciente->rut . " | " .$paciente->nombres . " " . $paciente->apellidos; ?></option>
-           <?php } ?>
-           <?php } ?>
-           
-        </select>
+      <select id="paciente" name="paciente[]" class="selectpicker with-ajax validate[required]" data-live-search="true" multiple>
+      </select>
     </div>
     <label for="detalle" class="col-sm-2 control-label">Detalle</label>
     <div class="col-sm-4">

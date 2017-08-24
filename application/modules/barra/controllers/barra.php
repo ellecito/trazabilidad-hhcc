@@ -26,12 +26,27 @@ class Barra extends CI_Controller {
 		$this->layout->js('js/jquery/file-input/jquery.nicefileinput.min.js');
 		$this->layout->js('js/jquery/file-input/nicefileinput-init.js');
 
+		#JS - Ajax multi select
+		$this->layout->js('js/jquery/ajax-bootstrap-select-master/dist/js/ajax-bootstrap-select.js');
+		$this->layout->css('js/jquery/ajax-bootstrap-select-master/dist/css/ajax-bootstrap-select.css');
+
 		$this->layout->js('js/sistema/barra/index.js');
 		$this->layout->js('js/sistema/barra/file.js');
-
-		$pacientes = $this->objPaciente->listar(false, false, 15);
 		
-		$this->layout->view('index', array("pacientes" => $pacientes));
+		$this->layout->view('index');
+	}
+
+	public function buscar_paciente(){
+		if($this->input->post()){
+			$q = $this->input->post("q");
+			$where = "CONCAT(pa_nombres, ' ', pa_apellidos) like '%$q%' or pa_rut like '%$q%' or pa_hhcc like '%$q%'";
+			$pacientes = $this->objPaciente->listar($where, false, 15);
+			echo json_encode($pacientes);
+			exit;
+		}else{
+			redirect(base_url());
+		}
+		
 	}
 
 	public function imprimir(){
