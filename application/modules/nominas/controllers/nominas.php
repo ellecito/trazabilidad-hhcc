@@ -271,8 +271,6 @@ class Nominas extends CI_Controller {
 	public function importar(){
 		if($_FILES['archivo']['error'] == 0){
 
-			require APPPATH."libraries/PHPExcel/PHPExcel.php";
-
 			if($_FILES['archivo']['name']==''){
 				echo json_encode(array("result"=>false,"msg"=>"Debes subir un archivo"));
 				exit;

@@ -20,6 +20,16 @@ class ComposerStaticInit35b34864841c658b82b796cc34aaa499
         ),
     );
 
+    public static $prefixesPsr0 = array (
+        'P' => 
+        array (
+            'PHPExcel' => 
+            array (
+                0 => __DIR__ . '/..' . '/phpoffice/phpexcel/Classes',
+            ),
+        ),
+    );
+
     public static $classMap = array (
         'CGIF' => __DIR__ . '/..' . '/mpdf/mpdf/classes/gif.php',
         'CGIFCOLORTABLE' => __DIR__ . '/..' . '/mpdf/mpdf/classes/gif.php',
@@ -60,6 +70,7 @@ class ComposerStaticInit35b34864841c658b82b796cc34aaa499
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit35b34864841c658b82b796cc34aaa499::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit35b34864841c658b82b796cc34aaa499::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit35b34864841c658b82b796cc34aaa499::$prefixesPsr0;
             $loader->classMap = ComposerStaticInit35b34864841c658b82b796cc34aaa499::$classMap;
 
         }, null, ClassLoader::class);
