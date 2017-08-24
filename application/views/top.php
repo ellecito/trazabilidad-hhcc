@@ -35,7 +35,7 @@
                     <li><a href="<?php echo base_url(); ?>anaqueles/">Anaqueles</a></li>
                     <li><a href="<?php echo base_url(); ?>divisiones/">Divisiones</a></li>
                     <li><a href="<?php echo base_url(); ?>especialidades/">Especialidades</a></li>
-                    <li><a href="<?php echo base_url(); ?>solicitudes/">Solicitudes</a></li>
+                    <li><a href="#">Solicitudes</a></li>
                     <li><a href="<?php echo base_url(); ?>motivo-solicitudes/">Motivo Solicitudes</a></li>
                     <li><a href="<?php echo base_url(); ?>unidades/">Unidades</a></li>
                     <li><a href="<?php echo base_url(); ?>box/">Box</a></li>

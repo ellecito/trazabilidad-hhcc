@@ -81,6 +81,7 @@ class Inicio extends CI_Controller {
 
 	public function reloj(){
 		echo json_encode(array("result" => true, "html" => strftime("%A, %d de %B de %Y, %H:%M:%S", strtotime(date("Y-m-d H:i:s")))));
+		exit;
 	}
 	
 }

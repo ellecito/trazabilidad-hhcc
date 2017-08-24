@@ -1,7 +1,7 @@
 <div class="page-header" style="text-align: center;">
 	<h1>Formulario de Solicitud</h1>	
 </div>
-<form class="form-horizontal" id="form-agregar">
+<form class="form-horizontal" id="form-agregar" enctype="multipart/form-data">
 
   <div class="form-group">
     <label for="medico" class="col-sm-2 control-label">Profesional:</label>
@@ -58,9 +58,9 @@
            
         </select>
     </div>
-    <label for="detalle" class="col-sm-2 control-label">Detalle</label>
+    <label for="email" class="col-sm-2 control-label">Email</label>
     <div class="col-sm-4">
-    <textarea name="detalle" id="detalle" class="form-control"></textarea>
+      <input type="text" id="email" name="email" class="form-control validate[required, custom[email]]" />
     </div>
   </div>
 
@@ -76,10 +76,23 @@
            
         </select>
     </div>
+    <label for="detalle" class="col-sm-2 control-label">Detalle</label>
+    <div class="col-sm-4">
+    <textarea name="detalle" id="detalle" class="form-control"></textarea>
+    </div>
+  </div>
+
+  <div class="form-group">
     <label for="fecha_entrega" class="col-sm-2 control-label">Fecha Solicitud</label>
     <div class="col-sm-4">
       <div class="input-group date">
         <input id="fecha_entrega" type="text" class="form-control" name="fecha_entrega" value="<?php echo date("d/m/Y"); ?>"/>
+        <span class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span> </span> </div>
+    </div>
+    <label for="fecha_devolucion" class="col-sm-2 control-label">Fecha Devolución</label>
+    <div class="col-sm-4">
+      <div class="input-group date">
+        <input readonly id="fecha_devolucion" type="text" class="form-control" name="fecha_devolucion" />
         <span class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span> </span> </div>
     </div>
     <div class="text-box">
@@ -90,7 +103,7 @@
   <div class="form-group" style="display: none;" id="hide_medico2">
     <label for="documento" class="col-sm-2 control-label">Documento</label>
     <div class="col-sm-4">
-      <input id="documento" type="file" class="nicefileinput nice" name="documento" accept=".pdf, .doc, .docx"/>
+      <input id="documento" type="file" class="nicefileinput nice" name="documento" accept=".pdf, .png, .jpg, .jpeg"/>
     </div>
     <label class="col-sm-2 control-label"></label>
     <div class="col-sm-4">
@@ -102,9 +115,8 @@
     <div class="col-sm-4">
       <input type="text" id="nombre" name="nombre" class="form-control validate[required]" />
     </div>
-    <label for="email" class="col-sm-2 control-label">Email Médico</label>
+    <label class="col-sm-2 control-label"></label>
     <div class="col-sm-4">
-    <input type="text" id="email" name="email" class="form-control validate[required, custom[email]]" />
     </div>
   </div>
 </form>

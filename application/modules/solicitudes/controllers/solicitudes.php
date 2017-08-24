@@ -16,7 +16,6 @@ class Solicitudes extends CI_Controller {
 		$this->load->model("medicos/modelo_medicos_especialidades", "objRel");
 		$this->load->model("unidades/modelo_unidades", "objUnidad");
 		$this->layout->current = 3;
-		//$this->layout->subCurrent = 8;
 	}
 
 	public function index($pagina = 1){
@@ -92,6 +91,13 @@ class Solicitudes extends CI_Controller {
 			}
 
 			$fecha_asignada = date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_entrega'))));
+
+			$day_of_the_week = date("Y-m-d", strtotime($fecha_asignada . "+" . $motivo->dias . " days"));
+			$day_of_the_week = date("N", strtotime($day_of_the_week));
+			if($day_of_the_week > 5){
+				$motivo->dias = $motivo->dias + (abs($day_of_the_week - 7)+1);
+
+			}
 			$fecha_entrega = date("Y-m-d", strtotime($fecha_asignada . "+" . $motivo->dias . " days"));
 
 			if($_FILES['documento']['error'] == 0){
@@ -113,19 +119,19 @@ class Solicitudes extends CI_Controller {
 				$extension = explode(".",$_FILES['documento']['name']);
 				$extension = array_pop($extension);
 				$extension = strtolower($extension);
-				$permitidas = array("pdf","doc","docx"); #extensiones permitidas
+				$permitidas = array("pdf","png","jpg","jpeg"); #extensiones permitidas
 				$name = 'solicitaciones_'.time();
 				$tmp = $_FILES["documento"]["tmp_name"];
 				
 				if(!in_array($extension, $permitidas)){
-					echo json_encode(array("result"=>false,"msg"=>"<div>Formato no permitido, solo se acepta pdf, doc y docx.</div>"));
+					echo json_encode(array("result"=>false,"msg"=>"<div>Formato no permitido, solo se acepta pdf, png, jpeg y jpg.</div>"));
 					exit;
 				}
 				
 				move_uploaded_file($tmp, $uploads_dir.$name . "." . $extension);
 				if(is_file($uploads_dir.$name . "." . $extension))
 					chmod($uploads_dir.$name . "." . $extension, 0777);
-				$uploads_dir = base_url() . "archivos/solicitaciones/";
+				//$uploads_dir = base_url() . "archivos/solicitaciones/";
 				$datos["so_documento"] = $uploads_dir.$name . "." . $extension;
 			}
 
@@ -221,21 +227,55 @@ class Solicitudes extends CI_Controller {
 
 			$motivo = $this->objMotivo->obtener(array("mo_codigo" => $this->input->post('motivo')));
 			$fecha_asignada = date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_entrega'))));
+			$day_of_the_week = date("Y-m-d", strtotime($fecha_asignada . "+" . $motivo->dias . " days"));
+			$day_of_the_week = date("N", strtotime($day_of_the_week));
+			if($day_of_the_week > 5){
+				$motivo->dias = $motivo->dias + (abs($day_of_the_week - 7)+1);
+
+			}
 			$fecha_entrega = date("Y-m-d", strtotime($fecha_asignada . "+" . $motivo->dias . " days"));
 
-			$datos = array(
-				'so_fecha_asignada' => $fecha_asignada,
-				'so_fecha_entrega' => $fecha_entrega,
-				'so_detalle' => $this->input->post('detalle'),
-				'so_nombre_medico' => $this->input->post('nombre'),
-				'so_email_medico' => $this->input->post('email'),
-				'so_telefono' => $this->input->post('telefono'),
-				'so_anexo' => $this->input->post('anexo'),
-				'so_celular' => $this->input->post('celular'),
-				'fu_codigo' => $this->session->userdata("usuario")->codigo,
-				'me_codigo' => $this->input->post('medico'),
-				'mo_codigo' => $this->input->post('motivo')
-			);
+			if($_FILES['documento']['error'] == 0){
+				require APPPATH."libraries/PHPExcel/PHPExcel.php";
+				
+				$uploads_dir = $_SERVER['DOCUMENT_ROOT'].'/hospital/archivos/';
+				if(!file_exists($uploads_dir)){
+					mkdir($uploads_dir,0777);
+				}
+				$uploads_dir .= "solicitaciones/";
+				if(!file_exists($uploads_dir))
+					mkdir($uploads_dir,0777);
+
+				$extension = explode(".",$_FILES['documento']['name']);
+				$extension = array_pop($extension);
+				$extension = strtolower($extension);
+				$permitidas = array("pdf","png","jpg","jpeg"); #extensiones permitidas
+				$name = 'solicitaciones_'.time();
+				$tmp = $_FILES["documento"]["tmp_name"];
+				
+				if(!in_array($extension, $permitidas)){
+					echo json_encode(array("result"=>false,"msg"=>"<div>Formato no permitido, solo se acepta pdf, png, jpeg y jpg.</div>"));
+					exit;
+				}
+				
+				move_uploaded_file($tmp, $uploads_dir.$name . "." . $extension);
+				if(is_file($uploads_dir.$name . "." . $extension))
+					chmod($uploads_dir.$name . "." . $extension, 0777);
+				//$uploads_dir = base_url() . "archivos/solicitaciones/";
+				$datos["so_documento"] = $uploads_dir.$name . "." . $extension;
+			}
+
+			$datos['so_fecha_asignada'] = $fecha_asignada;
+			$datos['so_fecha_entrega'] = $fecha_entrega;
+			$datos['so_detalle'] = $this->input->post('detalle');
+			$datos['so_nombre_medico'] = $this->input->post('nombre');
+			$datos['so_email_medico'] = $this->input->post('email');
+			$datos['so_telefono'] = $this->input->post('telefono');
+			$datos['so_anexo'] = $this->input->post('anexo');
+			$datos['so_celular'] = $this->input->post('celular');
+			$datos['fu_codigo'] = $this->session->userdata("usuario")->codigo;
+			$datos['me_codigo'] = $this->input->post('medico');
+			$datos['mo_codigo'] = $this->input->post('motivo');
 
 			if($this->objSolicitud->actualizar($datos,array("so_codigo"=>$this->input->post('codigo')))){
 				$this->objSolicitudPaciente->eliminar(array("so_codigo" => $this->input->post('codigo')));
@@ -264,6 +304,10 @@ class Solicitudes extends CI_Controller {
 			$this->layout->css('js/jquery/bootstrap-multi-select/dist/css/bootstrap-select.css');
 			$this->layout->js('js/jquery/bootstrap-multi-select/js/bootstrap-select.js');
 
+			#JS - Formulario
+			$this->layout->js('js/jquery/file-input/jquery.nicefileinput.min.js');
+			$this->layout->js('js/jquery/file-input/nicefileinput-init.js');
+
 			#js
 			$this->layout->js('js/sistema/solicitudes/editar.js');
 
@@ -277,7 +321,7 @@ class Solicitudes extends CI_Controller {
 
 			$contenido = array(
 				"solicitud" => $this->objSolicitud->obtener(array("so_codigo" => $codigo)),
-				"pacientes" => $this->objPaciente->listar(),
+				"pacientes" => $this->objPaciente->listar(false, false, 15),
 				"medicos" => $this->objMedicos->listar(),
 				"funcionarios" => $this->objFuncionario->listar(),
 				"motivos" => $this->objMotivo->listar(),
@@ -315,6 +359,15 @@ class Solicitudes extends CI_Controller {
 	public function motivo(){
 		if($this->input->post()){
 			$motivo = $this->objMotivo->obtener(array("mo_codigo" => $this->input->post("codigo")));
+			$fecha_asignada = date("Y-m-d",strtotime(str_replace("/","-",$this->input->post('fecha_entrega'))));
+			
+			$day_of_the_week = date("Y-m-d", strtotime($fecha_asignada . "+" . $motivo->dias . " days"));
+			$day_of_the_week = date("N", strtotime($day_of_the_week));
+			if($day_of_the_week > 5){
+				$motivo->dias = $motivo->dias + (abs($day_of_the_week - 7)+1);
+
+			}
+			$motivo->fecha_devolucion = date("d/m/Y", strtotime($fecha_asignada . "+" . $motivo->dias . " days"));
 			echo json_encode(array("result" => true, "motivo" => $motivo));
 			exit;
 		}else{
@@ -426,6 +479,7 @@ class Solicitudes extends CI_Controller {
 		}
 		$html.="</table>";
 		$html.= "</div>";
+		
 		$rutaPdf = "/hospital/archivos/";
 		if(!file_exists($_SERVER['DOCUMENT_ROOT'].$rutaPdf))
 			mkdir($_SERVER['DOCUMENT_ROOT'].$rutaPdf, 0777);
@@ -433,16 +487,38 @@ class Solicitudes extends CI_Controller {
 		if(!file_exists($_SERVER['DOCUMENT_ROOT'].$rutaPdf))
 			mkdir($_SERVER['DOCUMENT_ROOT'].$rutaPdf, 0777);
 			
-		$nombrePdf = "pdf".time().'.pdf';	 	 
-		require APPPATH."/libraries/mpdf/mpdf.php";
+		$nombrePdf = "pdf".time().'.pdf';
 		
 		ob_start();
-		$mpdf=new mPDF('utf-8','','','',0,0,0,0,6,3); 
+		$mpdf = new mPDF('utf-8','','','',0,0,0,0,6,3); 
 		$mpdf->SetDisplayMode('fullpage');
 		$mpdf->SetTitle('Solicitudes');
 		$mpdf->SetAuthor('HOSPITAL CHILLAN');
-		//$mpdf->WriteHTML(file_get_contents(base_url() . "css/nomina.css"), 1);
 		$mpdf->WriteHTML($html, 2);
+
+
+		if($solicitud->documento){
+			$mpdf->AddPage();
+			$extension = explode(".",$solicitud->documento);
+			$extension = array_pop($extension);
+			$extension = strtolower($extension);
+			if($extension == "pdf"){
+				$mpdf->SetImportUse();
+				$pagecount = $mpdf->SetSourceFile($solicitud->documento);
+				for ($i=1; $i<=$pagecount; $i++){
+			        $import_page = $mpdf->ImportPage($i);
+			        $mpdf->UseTemplate($import_page);
+			        if ($i < $pagecount) $mpdf->AddPage();
+			    }
+			}else{
+				$html = "<div style='padding: 20px; font-size: small;'>";
+				$html.="<img src='" . $solicitud->documento . "'>";
+				$html.= "</div>";
+
+				$mpdf->WriteHTML($html, 2);
+			}
+		}
+
 		$mpdf->Output($_SERVER['DOCUMENT_ROOT'].$rutaPdf.$nombrePdf,'F');
 		$rutaPdf = base_url() . "archivos/pdf/";
 		redirect($rutaPdf.$nombrePdf);

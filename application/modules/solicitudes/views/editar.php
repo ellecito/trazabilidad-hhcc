@@ -1,7 +1,7 @@
 <div class="page-header" style="text-align: center;">
   <h1>Formulario de Solicitud</h1>  
 </div>
-<form class="form-horizontal" id="form-editar">
+<form class="form-horizontal" id="form-editar" enctype="multipart/form-data">
 
   <div class="form-group">
     <label for="medico" class="col-sm-2 control-label">Profesional:</label>
@@ -26,7 +26,7 @@
   <div class="form-group">
     <label for="especialidad" class="col-sm-2 control-label">Especialidad:</label>
     <div class="col-sm-4">
-      <input readonly type="text" id="especialidad" name="especialidad" class="form-control validate[required]" />
+      <input readonly type="text" id="especialidad" name="especialidad" class="form-control" />
     </div>
     <label for="telefono" class="col-sm-2 control-label">Fono:</label>
     <div class="col-sm-4">
@@ -37,7 +37,7 @@
   <div class="form-group">
     <label for="servicio" class="col-sm-2 control-label">Servicio:</label>
     <div class="col-sm-4">
-      <input readonly type="text" id="servicio" name="servicio" class="form-control validate[required]" />
+      <input readonly type="text" id="servicio" name="servicio" class="form-control" />
     </div>
     <label for="celular" class="col-sm-2 control-label">Celular:</label>
     <div class="col-sm-4">
@@ -57,16 +57,16 @@
            <?php } ?>
         </select>
     </div>
-    <label for="detalle" class="col-sm-2 control-label">Detalle</label>
+    <label for="email" class="col-sm-2 control-label">Email</label>
     <div class="col-sm-4">
-    <textarea name="detalle" id="detalle" class="form-control"><?php echo $solicitud->detalle; ?></textarea>
+      <input type="text" id="email" name="email" class="form-control validate[required, custom[email]]" value="<?php echo $solicitud->email_medico; ?>" />
     </div>
   </div>
 
   <div class="form-group">
     <label for="paciente" class="col-sm-2 control-label">Paciente</label>
     <div class="col-sm-4">
-      <select id="paciente" name="paciente[]" class="selectpicker validate[required]" data-live-search="true" multiple>
+        <select id="paciente" name="paciente[]" class="selectpicker validate[required]" data-live-search="true" multiple>
            <option disabled>Seleccione</option>
            <?php if($pacientes){ ?>
            <?php foreach($pacientes as $paciente){ ?>
@@ -75,10 +75,23 @@
            <?php } ?>
         </select>
     </div>
+    <label for="detalle" class="col-sm-2 control-label">Detalle</label>
+    <div class="col-sm-4">
+    <textarea name="detalle" id="detalle" class="form-control"><?php echo $solicitud->detalle; ?></textarea>
+    </div>
+  </div>
+
+  <div class="form-group">
     <label for="fecha_entrega" class="col-sm-2 control-label">Fecha Solicitud</label>
     <div class="col-sm-4">
       <div class="input-group date">
-        <input id="fecha_entrega" type="text" class="form-control" name="fecha_entrega" value="<?php echo date("d/m/Y", strtotime($solicitud->fecha_asignada)); ?>"/>
+        <input id="fecha_entrega" type="text" class="form-control" name="fecha_entrega" value="<?php echo date("d/m/Y", strtotime($solicitud->fecha_asignada)); ?>" />
+        <span class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span> </span> </div>
+    </div>
+    <label for="fecha_devolucion" class="col-sm-2 control-label">Fecha Devolución</label>
+    <div class="col-sm-4">
+      <div class="input-group date">
+        <input readonly id="fecha_devolucion" type="text" class="form-control" name="fecha_devolucion" value="<?php echo date("d/m/Y", strtotime($solicitud->fecha_entrega)); ?>" />
         <span class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span> </span> </div>
     </div>
     <div class="text-box">
@@ -86,14 +99,23 @@
     </div>
   </div>
 
+  <div class="form-group" style="display: none;" id="hide_medico2">
+    <label for="documento" class="col-sm-2 control-label">Documento</label>
+    <div class="col-sm-4">
+      <input id="documento" type="file" class="nicefileinput nice" name="documento" accept=".pdf, .png, .jpg, .jpeg"/>
+    </div>
+    <label class="col-sm-2 control-label"></label>
+    <div class="col-sm-4">
+    </div>
+  </div>
+
   <div class="form-group" style="display: none;" id="hide_medico1">
     <label for="nombre" class="col-sm-2 control-label">Nombre Médico</label>
     <div class="col-sm-4">
-      <input type="text" id="nombre" name="nombre" class="form-control validate[required]" />
+      <input type="text" id="nombre" name="nombre" class="form-control validate[required]" value="<?php echo $solicitud->nombre_medico; ?>" />
     </div>
-    <label for="email" class="col-sm-2 control-label">Email Médico</label>
+    <label class="col-sm-2 control-label"></label>
     <div class="col-sm-4">
-    <input type="text" id="email" name="email" class="form-control validate[required, custom[email]]" />
     </div>
   </div>
 </form>

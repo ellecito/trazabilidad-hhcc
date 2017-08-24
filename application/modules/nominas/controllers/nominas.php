@@ -4,7 +4,6 @@ class Nominas extends CI_Controller {
 	
 	function __construct(){
 		parent::__construct();
-		require APPPATH."/libraries/mpdf/mpdf.php";
 		if(!$this->session->userdata("usuario")) redirect(base_url());
 		$this->load->model("modelo_nominas", "objNominas");
 		$this->load->model("modelo_nomina_agenda", "objRel");

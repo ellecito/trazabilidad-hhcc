@@ -29,7 +29,7 @@ class Barra extends CI_Controller {
 		$this->layout->js('js/sistema/barra/index.js');
 		$this->layout->js('js/sistema/barra/file.js');
 
-		$pacientes = $this->objPaciente->listar();
+		$pacientes = $this->objPaciente->listar(false, false, 15);
 		
 		$this->layout->view('index', array("pacientes" => $pacientes));
 	}
@@ -69,8 +69,7 @@ class Barra extends CI_Controller {
 			if(!file_exists($_SERVER['DOCUMENT_ROOT'].$rutaPdf))
 				mkdir($_SERVER['DOCUMENT_ROOT'].$rutaPdf, 0777);
 			
-			$nombrePdf = "pdf".time().'.pdf';	 	 
-			require APPPATH."/libraries/mpdf/mpdf.php";
+			$nombrePdf = "pdf".time().'.pdf';
 			
 			ob_start();
 			$mpdf=new mPDF('utf-8',array(50,25),'','',0,0,0,0,6,3); 
@@ -165,8 +164,7 @@ class Barra extends CI_Controller {
 			if(!file_exists($_SERVER['DOCUMENT_ROOT'].$rutaPdf))
 				mkdir($_SERVER['DOCUMENT_ROOT'].$rutaPdf, 0777);
 			
-			$nombrePdf = "pdf".time().'.pdf';	 	 
-			require APPPATH."/libraries/mpdf/mpdf.php";
+			$nombrePdf = "pdf".time().'.pdf';
 			
 			ob_start();
 			$mpdf=new mPDF('utf-8',array(50,25),'','',0,0,0,0,6,3); 
