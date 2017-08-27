@@ -49,6 +49,10 @@ class Nominas extends CI_Controller {
 		$this->layout->js('js/jquery/file-input/jquery.nicefileinput.min.js');
 		$this->layout->js('js/jquery/file-input/nicefileinput-init.js');
 
+		#JS - Ajax multi select
+		$this->layout->js('js/jquery/ajax-bootstrap-select-master/dist/js/ajax-bootstrap-select.js');
+		$this->layout->css('js/jquery/ajax-bootstrap-select-master/dist/css/ajax-bootstrap-select.css');
+
 		$this->layout->js('js/sistema/nominas/index.js');
 		$this->layout->js('js/sistema/nominas/file.js');
 
@@ -66,6 +70,68 @@ class Nominas extends CI_Controller {
 		$this->layout->view('index', $contenido);
 	}
 
+	public function buscar_medico(){
+		if($this->input->post()){
+			$q = $this->input->post("q");
+			$where = "CONCAT(me_nombres, ' ', me_apellidos) like '%$q%' or me_rut like '%$q%'";
+			$medicos = $this->objMedico->listar($where, false, 15);
+			echo json_encode($medicos);
+			exit;
+		}else{
+			redirect(base_url());
+		}
+	}
+
+	public function esp_ser(){
+		if($this->input->post()){
+			$med_especialidades = $this->objRelE->listar(array("me_codigo" => $this->input->post("codigo")));
+			$medico_especialidades = array();
+			foreach($med_especialidades as $med_esp){
+				$medico_especialidades[] = $med_esp->es_codigo;
+			}
+			$where = "es_codigo IN (" . implode(",", $medico_especialidades) . ")";
+			$especialidades = $this->objEspecialidad->listar($where);
+			$html = "";
+			foreach($especialidades as $especialidad){
+				$html.="<option value='" . $especialidad->codigo . "' selected>" . $especialidad->nombre . "</option>";
+			}
+			echo json_encode(array("result" => true, "html" => $html));
+			exit;
+		}else{
+			redirect(base_url());
+		}
+	}
+
+	public function validar(){
+		if($this->input->post()){
+			$this->form_validation->set_rules('fecha', 'Fecha Solicitud', 'required');
+			
+			$this->form_validation->set_rules('boxs', 'Unidades', 'required');
+			$this->form_validation->set_rules('especialidades', 'Especialidades', 'required');
+			$this->form_validation->set_rules('clases', 'Clases', 'required');
+			$this->form_validation->set_rules('coberturas', 'Coberturas', 'required');
+			$this->form_validation->set_rules('canales', 'Canales', 'required');
+
+			$medicos_esp = array_intersect_key($this->input->post(), array_flip(preg_grep("/medico_/", array_keys($this->input->post()), 0)));
+			if(!$medicos_esp){
+				$this->form_validation->set_rules('medicos', 'Médicos', 'required');
+			}
+
+			$this->form_validation->set_message('required', '* %s es obligatorio');
+			$this->form_validation->set_error_delimiters('<div>','</div>');
+
+			if(!$this->form_validation->run()){
+				echo json_encode(array("result"=>false,"msg"=>validation_errors()));
+				exit;
+			}else{
+				echo json_encode(array("result" => true));
+				exit;
+			}
+		}else{
+			redirect(base_url());
+		}
+	}
+
 	public function calculo(){
 		if($this->input->post()){
 
@@ -81,30 +147,56 @@ class Nominas extends CI_Controller {
 			//Filtros
 			$params = array();
 			parse_str($this->input->post("formData"), $params);
-			$where_medico = "me_estado = 1 AND me_codigo IN (" . implode(",", $params["medicos"]) . ")";
-			$where_especialidades = "es_codigo IN (" . implode(",", $params["especialidades"]) . ")";
+
+			$medicos_esp = array_intersect_key($params, array_flip(preg_grep("/medico_/", array_keys($params), 0)));
+
+			if($medicos_esp){
+				$especialidades_esp = array_intersect_key($params, array_flip(preg_grep("/especialidad_/", array_keys($params), 0)));
+				$especialidades_esp = array_values($especialidades_esp);
+			}
+
+			if(!isset($params["medicos"])){
+				$where_medico = "me_codigo IN (" . implode(",", array_values($medicos_esp)) . ")";
+			}else{
+				$where_medico = "me_codigo IN (" . implode(",", $params["medicos"]) . ")";
+			}
+			
+			$where_esp = "es_codigo IN (" . implode(",", $params["especialidades"]) . ")";
+
 			$where_boxs = "bx_codigo IN (" . implode(",", $params["boxs"]) . ")";
 			$where_clases = "cl_codigo IN (" . implode(",", $params["clases"]) . ")";
 			$where_coberturas = "co_codigo IN (" . implode(",", $params["coberturas"]) . ")";
 			$where_canales = "cn_codigo IN (" . implode(",", $params["canales"]) . ")";
 			$where_fecha = "ag_hora_agendada BETWEEN '" . date("Y-m-d", strtotime(str_replace("/", "-", $params["fecha"]))) . " 00:00:00' AND '" . date("Y-m-d", strtotime(str_replace("/", "-", $params["fecha"]))) . " 23:59:00'";
-			$where_fecha2 = "so_fecha_asignada BETWEEN '" . date("Y-m-d", strtotime(str_replace("/", "-", $params["fecha"]))) . " 00:00:00' AND '" . date("Y-m-d", strtotime(str_replace("/", "-", $params["fecha"]))) . " 23:59:00'";
+
+			$where_agenda = $where_boxs . " AND " . $where_fecha . " AND " . $where_clases . " AND " . $where_coberturas . " AND " . $where_canales;
 
 			//Armado de nominas
 			$nominas = array();
 			$vouchers = array();
 			$hhcc = array();
+
 			foreach($this->objMedico->listar($where_medico) as $medico){
 				//Calculo de nomina por medico
-				foreach($this->objRelE->listar($where_especialidades . " AND me_codigo =" . $medico->codigo) as $especialidad){
-					$where = $where_boxs . " AND me_codigo = " . $medico->codigo . " AND " . $where_fecha . " AND es_codigo = " . $especialidad->es_codigo . " AND " . $where_clases . " AND " . $where_coberturas . " AND " . $where_canales;
+				$where_rel = $where_esp . " AND me_codigo = " . $medico->codigo;
+				if($medicos_esp){
+					if(in_array($medico->codigo, array_values($medicos_esp))){
+						$index = array_search($medico->codigo, array_values($medicos_esp));
+						$where_rel = "es_codigo IN (" . implode(",", $especialidades_esp[$index]) . ") AND me_codigo = " . $medico->codigo;
+					}
+				}
+				$especialidades = $this->objRelE->listar($where_rel);
+				
+				foreach($especialidades as $especialidad){
+					$where = $where_agenda . " AND me_codigo = " . $medico->codigo . " AND es_codigo = " . $especialidad->es_codigo;
+					
 					if($agendas = $this->objAgenda->listar($where)){
 						$nomina = new stdClass();
 						$nomina->codigo = $this->objNominas->getLastId();
 						$nomina->medico = $medico;
-						$nomina->medico->especialidad = $this->objEspecialidad->obtener(array("es_codigo" => $especialidad->es_codigo));
-						$nomina->medico->servicio = $this->objServicio->obtener(array("se_codigo" => $nomina->medico->especialidad->se_codigo));
-						$nomina->ubicacion = $this->objUnidad->obtener(array("un_codigo" => $nomina->medico->servicio->un_codigo));
+						$nomina->especialidad = $this->objEspecialidad->obtener(array("es_codigo" => $especialidad->es_codigo));
+						$nomina->servicio = $this->objServicio->obtener(array("se_codigo" => $nomina->especialidad->se_codigo));
+						$nomina->ubicacion = $this->objUnidad->obtener(array("un_codigo" => $nomina->servicio->un_codigo));
 						$nomina->agendas = $agendas;
 						$nomina->fecha_creacion = date("Y-m-d H:i:s");
 						$nomina->fecha_asignacion = date("Y-m-d", strtotime(str_replace("/", "-", $params["fecha"]))) . " 08:00:00";
@@ -144,6 +236,7 @@ class Nominas extends CI_Controller {
 						
 						$nomina->pacientes = $pacientes;
 						$nominas[] = $nomina;
+						unset($nomina);
 					}
 				}
 			}
@@ -183,7 +276,7 @@ class Nominas extends CI_Controller {
 	private function pdf_nominas($nominas){
 		$html = '';
 		foreach($nominas as $nomina){
-			$html.= '<div style="padding: 20px; font-size: 50%;"><img src="' . base_url() . 'imagenes/template/logo.png" style="width: 10%;"/><center><h3>NOMINA HHCC</h3></center><table style="width: 100%; font-size: 50%;"><tr><td><b>NOMINA</b></td><td>' . $nomina->codigo . '</td></tr><tr><td><b>FEC. ATENCION</b></td><td>' . formatearFecha(substr($nomina->fecha_asignacion, 0, 10)) . " " . substr($nomina->fecha_asignacion, 10, 6) . '</td><td><b>LUGAR ENTREGA</b></td><td>' . $nomina->ubicacion->codigo . '</td><td>' . $nomina->ubicacion->nombre . '</td><td><b>APROBADAS</b></td><td>' . count($nomina->pacientes) . '</td></tr><tr><td><b>FEC. CREACION</b></td><td>' . formatearFecha(substr($nomina->fecha_creacion, 0, 10)) . " " . substr($nomina->fecha_creacion, 10, 6) . '</td><td><b>SERVICIO</b></td><td>' . $nomina->medico->servicio->codigo . '</td><td>' . $nomina->medico->servicio->nombre . '</td><td><b>RECHAZADAS</b></td><td>0</td></tr><tr><td><b>TIPO ATENCION</b></td><td>AMB</td><td><b>ESPECIALIDAD</b></td><td>' . $nomina->medico->especialidad->codigo . '</td><td>' . $nomina->medico->especialidad->nombre . '</td><td><b>DEVUELTAS</b></td><td>0</td></tr><tr><td><b></b></td><td></td><td><b>PROFESIONAL</b></td><td>' . $nomina->medico->codigo . '</td><td>' . $nomina->medico->nombres . " " . $nomina->medico->apellidos . '</td><td><b>TOTAL</b></td><td>' .count($nomina->pacientes) . '</td></tr><tr style="border: 1px;"><td><b>HHCC</b></td><td><b>NOMBRE PACIENTE</b></td><td></td><td><b>LUGAR USO</b></td><td><b>HOR. DEV.</b></td><td><b>ULT. UBICACION</b></td><td></td></tr>';
+			$html.= '<div style="padding: 20px; font-size: 50%;"><img src="' . base_url() . 'imagenes/template/logo.png" style="width: 10%;"/><center><h3>NOMINA HHCC</h3></center><table style="width: 100%; font-size: 50%;"><tr><td><b>NOMINA</b></td><td>' . $nomina->codigo . '</td></tr><tr><td><b>FEC. ATENCION</b></td><td>' . formatearFecha(substr($nomina->fecha_asignacion, 0, 10)) . " " . substr($nomina->fecha_asignacion, 10, 6) . '</td><td><b>LUGAR ENTREGA</b></td><td>' . $nomina->ubicacion->codigo . '</td><td>' . $nomina->ubicacion->nombre . '</td><td><b>APROBADAS</b></td><td>' . count($nomina->pacientes) . '</td></tr><tr><td><b>FEC. CREACION</b></td><td>' . formatearFecha(substr($nomina->fecha_creacion, 0, 10)) . " " . substr($nomina->fecha_creacion, 10, 6) . '</td><td><b>SERVICIO</b></td><td>' . $nomina->servicio->codigo . '</td><td>' . $nomina->servicio->nombre . '</td><td><b>RECHAZADAS</b></td><td>0</td></tr><tr><td><b>TIPO ATENCION</b></td><td>AMB</td><td><b>ESPECIALIDAD</b></td><td>' . $nomina->especialidad->codigo . '</td><td>' . $nomina->especialidad->nombre . '</td><td><b>DEVUELTAS</b></td><td>0</td></tr><tr><td><b></b></td><td></td><td><b>PROFESIONAL</b></td><td>' . $nomina->medico->codigo . '</td><td>' . $nomina->medico->nombres . " " . $nomina->medico->apellidos . '</td><td><b>TOTAL</b></td><td>' .count($nomina->pacientes) . '</td></tr><tr style="border: 1px;"><td><b>HHCC</b></td><td><b>NOMBRE PACIENTE</b></td><td></td><td><b>LUGAR USO</b></td><td><b>HOR. DEV.</b></td><td><b>ULT. UBICACION</b></td><td></td></tr>';
 
 			foreach($nomina->pacientes as $paciente){
 				$html.= '<tr><td>' . $paciente->hhcc . '</td><td>' . $paciente->nombres . " " . $paciente->apellidos . '</td><td></td><td>LUGAR USO</td><td> ' . substr($paciente->hora, 10, 6) . '</td><td>---</td><td></td></tr>';
@@ -205,12 +298,10 @@ class Nominas extends CI_Controller {
 		$firma = '<div style="padding:10px; text-align: center;">Nombre: _____________________ | Firma: _____________________ | Fecha: ____/____/________<div>';
 		ob_start();
 		$mpdf=new mPDF('utf-8','','','',0,0,0,0,6,3);
-		//$mpdf->use_embeddedfonts_1252 = true; // false is default
 		$mpdf->SetDisplayMode('fullpage');
 		$mpdf->SetTitle('NOMINAS');
 		$mpdf->SetAuthor('HOSPITAL CHILLAN');
 		$mpdf->SetHTMLFooter($firma);
-		//$mpdf->WriteHTML(file_get_contents(base_url() . "css/nomina.css"), 1);
 		$mpdf->WriteHTML($html, 2);
 
 		$mpdf->Output($_SERVER['DOCUMENT_ROOT'].$rutaPdf.$nombrePdf,'F');
@@ -257,11 +348,9 @@ class Nominas extends CI_Controller {
 
 		ob_start();
 		$mpdf=new mPDF('utf-8','','','',0,0,0,0,6,3);
-		//$mpdf->use_embeddedfonts_1252 = true; // false is default
 		$mpdf->SetDisplayMode('fullpage');
 		$mpdf->SetTitle('VOUCHERS');
 		$mpdf->SetAuthor('HOSPITAL CHILLAN');
-		//$mpdf->WriteHTML(file_get_contents(base_url() . "css/nomina.css"), 1);
 		$mpdf->WriteHTML($html, 2);
 
 		$mpdf->Output($_SERVER['DOCUMENT_ROOT'].$rutaPdf.$nombrePdf,'F');

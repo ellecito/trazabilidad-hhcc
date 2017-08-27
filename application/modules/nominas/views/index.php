@@ -1,5 +1,5 @@
 <div class="page-header">
-	<h1>Calculo de Nominas</h1>	
+	<h1>Cálculo de Nominas</h1>	
 </div>
 <form class="form-horizontal" id="form-agregar" method=POST action="calculo/">
   <div class="form-group">
@@ -14,10 +14,9 @@
       <select id="medicos" name="medicos[]" class="selectpicker validate[required]" multiple data-live-search="true" data-actions-box="true">
            <?php if($medicos){ ?>
            <?php foreach($medicos as $medico){ ?>
-           <option value="<?php echo $medico->codigo; ?>" selected><?php echo $medico->rut . " | " . $medico->nombres . " " . $medico->apellidos; ?></option>
+           <option value="<?php echo $medico->codigo; ?>" selected data-subtext="<?php echo $medico->rut; ?>"><?php echo $medico->nombres . " " . $medico->apellidos ?></option>
            <?php } ?>
            <?php } ?>
-           
         </select>
     </div>
   </div>
@@ -85,9 +84,26 @@
       <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
     </div>
   </div>
+
+  <div class="page-header">
+    <h1>Filtro especial médico-especialidad</h1> 
+  </div>
+  <a href="#" id="add">Agregar +</a>
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Médico</label>
+    <div class="col-sm-4">
+        <select name="medico_1" class="medicos selectpicker with-ajax validate[required]" data-live-search="true">
+        </select>
+    </div>
+    <label class="col-sm-2 control-label">Especialidad</label>
+    <div class="col-sm-4">
+    <select multiple id="especialidad_1" name="especialidad_1[]" class="especialidades selectpicker with-ajax">
+    </select>
+    </div>
+  </div>
 </form>
 
-<form class="form-horizontal" id="form-importar" method="POST" enctype="multipart/form-data">
+<!--<form class="form-horizontal" id="form-importar" method="POST" enctype="multipart/form-data">
   <a href="ejemplo">Descargar ejemplo</a>
   <div class="form-group">
     <label for="archivo" class="col-sm-2 control-label">Importar Traza</label>
@@ -98,4 +114,4 @@
       <button type="submit" class="btn btn-primary btn-lg">Subir</button>
     </div>
   </div>
-</form>
+</form>-->

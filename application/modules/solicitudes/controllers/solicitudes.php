@@ -71,7 +71,6 @@ class Solicitudes extends CI_Controller {
 		}else{
 			redirect(base_url());
 		}
-		
 	}
 
 	public function agregar(){

@@ -23,8 +23,8 @@ Script se demoró <?php echo round($timediff/60); ?> minutos.
 		<td><b>FEC. CREACION</b></td>
 		<td><?php echo formatearFecha(substr($nomina->fecha_creacion, 0, 10)) . " " . substr($nomina->fecha_creacion, 10, 6); ?></td>
 		<td><b>SERVICIO</b></td>
-		<td><?php echo $nomina->medico->servicio->codigo; ?></td>
-		<td><?php echo $nomina->medico->servicio->nombre; ?></td>
+		<td><?php echo $nomina->servicio->codigo; ?></td>
+		<td><?php echo $nomina->servicio->nombre; ?></td>
 		<td><b>RECHAZADAS</b></td>
 		<td>0</td>
 	</tr>
@@ -32,8 +32,8 @@ Script se demoró <?php echo round($timediff/60); ?> minutos.
 		<td><b>TIPO ATENCION</b></td>
 		<td>AMB</td>
 		<td><b>ESPECIALIDAD</b></td>
-		<td><?php echo $nomina->medico->especialidad->codigo; ?></td>
-		<td><?php echo $nomina->medico->especialidad->nombre; ?></td>
+		<td><?php echo $nomina->especialidad->codigo; ?></td>
+		<td><?php echo $nomina->especialidad->nombre; ?></td>
 		<td><b>DEVUELTAS</b></td>
 		<td>0</td>
 	</tr>
@@ -60,7 +60,7 @@ Script se demoró <?php echo round($timediff/60); ?> minutos.
 		<td><?php echo $paciente->hhcc; ?></td>
 		<td><?php echo $paciente->nombres . " " . $paciente->apellidos; ?></td>
 		<td></td>
-		<td>LUGAR USO</td>
+		<td><?php echo $paciente->box->nombre; ?></td>
 		<td><?php echo $paciente->hora; ?></td>
 		<td>ULTIMA UBICACION</td>
 		<td></td>
